@@ -9,8 +9,8 @@ public class Money {
 
     private static final RoundingMode DEFAULT_ROUNDING = RoundingMode.HALF_EVEN;
 
-    private BigDecimal amount;
-    private Currency currency;
+    private final BigDecimal amount;
+    private final Currency currency;
 
     public static Money dollars(double amount) {
         return valueOf(BigDecimal.valueOf(amount), USD);

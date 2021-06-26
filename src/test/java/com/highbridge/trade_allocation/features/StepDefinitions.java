@@ -1,17 +1,13 @@
 package com.highbridge.trade_allocation.features;
 
-import com.highbridge.trade_allocation.Account;
-import com.highbridge.trade_allocation.Stock;
+import com.highbridge.trade_allocation.domain.Account;
+import com.highbridge.trade_allocation.domain.Stock;
 import com.highbridge.trade_allocation.domain.sub.Money;
 import com.highbridge.trade_allocation.domain.sub.Percent;
 import io.cucumber.java.Before;
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
 import io.cucumber.java8.En;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import java.lang.annotation.Annotation;
 
 public class StepDefinitions implements En {
     Account anAccount;
@@ -28,6 +24,13 @@ public class StepDefinitions implements En {
         When("^current price of (.*) Stock is (.*)$", (String stockSymbol, String currentPrice) -> {
             aStock = new Stock(stockSymbol, toMoney(currentPrice));
         });
+        When("^an investor (.*) has (.*) shares of (.*) Stock with current price (.*) in the account$", (String investor, Integer ownedQuantity, String stockSymbol, String currentPrice) -> {
+            // TODO - update this
+        });
+
+        When("^an investor (.*) sets (.*) target percent of (.*) Stock$", (String investor, String targetPercent, String stockSymbol) -> {
+            // TODO - update this
+        });
 
         Then("^an investor (.*) has an account with (.*) for (.*) Stock$", (String investor, String marketValue, String stockSymbol) -> {
             System.out.println(investor);
@@ -42,7 +45,8 @@ public class StepDefinitions implements En {
 
             assertThat(anAccount.maxShare(aStock), is(maxShare));
         });
-
+        Then("^an investor (.*) can own (.*) more shares of (.*) Stock$", (String investor, Integer extraShare, String stockSymbol) -> {
+        });
     }
 
     Money toMoney(String money) {
