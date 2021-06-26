@@ -14,22 +14,16 @@ public class Account {
 
     private final List<Holding> holdings;
     private final Map<String, Percent> targetPercents;
-    private final Map<String, Money> stockPrices;
 
     public Account(String investor, Money capital) {
         this.investor = investor;
         this.capital = capital;
         this.holdings = new ArrayList<>();
         this.targetPercents = new HashMap<>();
-        this.stockPrices = new HashMap<>();
     }
 
     public void add(Holding holding) {
         this.holdings.add(holding);
-    }
-
-    public void add(Stock stock, Money price) {
-        this.stockPrices.put(stock.symbol(), price);
     }
 
     public void add(String stockSymbol, Percent targetPercent) {
