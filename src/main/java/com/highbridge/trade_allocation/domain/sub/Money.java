@@ -61,18 +61,6 @@ public class Money {
         return valueOf(amount.multiply(BigDecimal.valueOf(factor)), getCurrency());
     }
 
-//    public Money of(Ratio ratio) {
-//        return valueOf(amount.multiply(ratio.getNumerator()).divide(ratio.getDenominator(), DEFAULT_ROUNDING), getCurrency());
-//    }
-
-    public int compareTo(Money other) {
-        if (!getCurrency().equals(other.getCurrency())) {
-            throw new IllegalArgumentException("Currency is not same!");
-        }
-
-        return getAmount().compareTo(other.getAmount());
-    }
-
     @Override
     public boolean equals(Object object) {
         if (this == object) {
