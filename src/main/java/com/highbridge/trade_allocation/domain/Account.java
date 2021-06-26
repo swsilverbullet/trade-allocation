@@ -29,4 +29,8 @@ public class Account {
         }
         return Money.dollars(0);
     }
+
+    public String investor() {
+        return this.investor;
+    }
 }
