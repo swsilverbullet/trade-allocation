@@ -1,6 +1,6 @@
 Feature: Buy & Allocate a new Stock
 
-  Scenario Outline: Target Max Value & Maximum Share of Stock for Account
+  Scenario Outline: What is "Target Max Value" & "Target Maximum Share"
     Given an investor <Investor> has an account with <Capital> capital
     And an investor <Investor> sets a <Stock Symbol> Stock with target percent <Target Percent>
     When current price of <Stock Symbol> Stock is <Current Price>
@@ -13,7 +13,7 @@ Feature: Buy & Allocate a new Stock
       | Sarah    | $150,000 | GOOGLE       | $20           | 1%             | $1,500              | 75               |
       | Sarah    | $150,000 | APPLE        | $10           | 2%             | $3,000              | 300              |
 
-  Scenario Outline: Calculate Extra Quantity of Stock for Account
+  Scenario Outline: Calculating allowed share when the account already holds some
     Given an investor <Investor> has an account with <Capital> capital
     When an investor <Investor> has <Owned Quantity> shares of <Stock Symbol> Stock with current price <Current Price> in the account
     And an investor <Investor> sets <Target Percent> target percent of <Stock Symbol> Stock
@@ -25,6 +25,21 @@ Feature: Buy & Allocate a new Stock
       | Sarah    | $150,000 | GOOGLE       | $20           | 1%             | 10             | 65             |
       | Sarah    | $150,000 | APPLE        | $10           | 2%             | 50             | 250            |
 
+  Scenario: Maximum share for portfolio manager can buy
+    Given an investor John has an account with $50,000 capital
+    And an investor John sets 4% target percent of GOOGLE Stock
+    And an investor John has 50 shares of GOOGLE Stock with current price $20 in the account
+    Given an investor Sarah has an account with $150,000 capital
+    And an investor Sarah sets 1% target percent of GOOGLE Stock
+    And an investor Sarah has 10 shares of GOOGLE Stock with current price $20 in the account
+    Then a portfolio manager is entitled to buy up to 115 share of GOOGLE Stock
+
+  #  Scenario Outline: Maximum share to buy & allocate
+#    Given an investor John has a capability to own extra 50 share of GOOGLE Stock
+#    And an investor Sarah has a capability to own extra 65 share of GOOGLE Stock
+#    Then a portfolio manager Mary entitled to buy up to 115 share of GOOGLE Stock
+#    And a portfolio manager Mary can allocate the 50 share of GOOGLE Stock into John account
+#    And a portfolio manager Mary can allocate the 65 share of GOOGLE Stock into Sarah account
 
 #    Given an investor John has an account with $50,000 capital
 #    And an investor Sarah has an account with $150,000 capital

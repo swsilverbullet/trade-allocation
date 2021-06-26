@@ -6,21 +6,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class StockExchangeRepository {
-    private final Map<String, Stock> stocks;
+    private final Map<String, Money> prices;
 
     public StockExchangeRepository() {
-        this.stocks = new HashMap<>();
+        this.prices = new HashMap<>();
     }
 
-    public Stock findBySymbol(String symbol) {
-        return stocks.get(symbol);
-    }
-
-    public void add(Stock stock) {
-        this.stocks.put(stock.symbol(), stock);
+    public void add(Stock stock, Money price) {
+        this.prices.put(stock.symbol(), price);
     }
 
     public Money price(String stockSymbol) {
-        return stocks.get(stockSymbol).price();
+        return prices.get(stockSymbol);
     }
 }

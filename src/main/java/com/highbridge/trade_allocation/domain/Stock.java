@@ -1,21 +1,40 @@
 package com.highbridge.trade_allocation.domain;
 
-import com.highbridge.trade_allocation.domain.sub.Money;
-
 public class Stock {
     private final String symbol;
-    private final Money price;
 
-    public Stock(String stockSymbol, Money currentPrice) {
+    public Stock(String stockSymbol) {
         this.symbol = stockSymbol;
-        this.price = currentPrice;
     }
 
     public String symbol() {
         return symbol;
     }
 
-    public Money price() {
-        return price;
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+
+        if (!(object instanceof Stock)) {
+            return false;
+        }
+
+        Stock other = (Stock) object;
+        return symbol().equals(other.symbol());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 37 * result + symbol().hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return symbol();
     }
 }

@@ -12,4 +12,12 @@ public class Holding {
         this.price = price;
         this.quantity = quantity;
     }
+
+    public String stockSymbol() {
+        return stockSymbol;
+    }
+
+    public Integer quantity() {
+        return quantity;
+    }
 }

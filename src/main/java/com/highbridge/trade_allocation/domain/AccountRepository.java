@@ -1,6 +1,8 @@
 package com.highbridge.trade_allocation.domain;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class AccountRepository {
@@ -13,6 +15,10 @@ public class AccountRepository {
 
     public Account findByInvestor(String investor) {
         return accounts.get(investor);
+    }
+
+    public List<Account> all() {
+        return new ArrayList<>(accounts.values());
     }
 
     public void addAccount(Account account) {
