@@ -49,6 +49,12 @@ public class MoneyTest {
     }
 
     @Test
+    public void testDivide() throws Exception {
+        assertThat(Money.dollars(30.15).divide(3), is(Money.dollars(10.05)));
+        assertThat(Money.dollars(2000).times(160).divide(3500), is(Money.dollars(91.43)));
+    }
+
+    @Test
     public void testEqual() throws Exception {
         assertThat(Money.dollars(100), is(Money.dollars(100)));
         assertThat(Money.dollars(100), is(Money.valueOf(new BigDecimal(100), Currency.getInstance("USD"))));

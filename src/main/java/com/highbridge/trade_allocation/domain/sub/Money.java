@@ -61,6 +61,14 @@ public class Money {
         return valueOf(amount.multiply(BigDecimal.valueOf(factor)), getCurrency());
     }
 
+    public Money divide(double factor) {
+        return times(1 / factor);
+    }
+
+    public Money divide(Money other) {
+        return divide(other.getAmount().doubleValue());
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) {
