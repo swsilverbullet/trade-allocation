@@ -43,6 +43,9 @@ public class StepDefinitions implements En {
             Account account = accountRepository.findByInvestor(investor);
             account.add(new Holding(stockSymbol, exchangeRepository.price(stockSymbol), quantity));
         });
+        When("^a portfolio manager allocates the new (.*) Stock$", (String stockSymbol) -> {
+            portfolio.allocateNew(stockSymbol);
+        });
 
         Then("^an investor (.*) has an account with (.*) for (.*) Stock$", (String investor, String marketValue, String stockSymbol) -> {
             Account account = accountRepository.findByInvestor(investor);
@@ -69,8 +72,8 @@ public class StepDefinitions implements En {
         });
         Then("^a portfolio manager suggests additional (.*) shares of (.*) Stock in (.*)'s account$", (String additionalShare, String stockSymbol, String investor) -> {
             Account account = accountRepository.findByInvestor(investor);
-            Double finalPosition = portfolio.suggestedAdditionalPosition(account, new Stock(stockSymbol));
-            assertThat(finalPosition, is(toMoney(additionalShare).getAmount().doubleValue()));
+            Double additionalPosition = portfolio.suggestedAdditionalPosition(account, new Stock(stockSymbol));
+            assertThat(additionalPosition, is(toMoney(additionalShare).getAmount().doubleValue()));
         });
     }
 
