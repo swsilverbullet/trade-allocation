@@ -1,10 +1,12 @@
 package com.highbridge.trade_allocation;
 
+import com.highbridge.trade_allocation.domain.sub.Money;
+
 public class Stock {
     private final String symbol;
-    private final double price;
+    private final Money price;
 
-    public Stock(String stockSymbol, double currentPrice) {
+    public Stock(String stockSymbol, Money currentPrice) {
         this.symbol = stockSymbol;
         this.price = currentPrice;
     }
@@ -13,7 +15,7 @@ public class Stock {
         return symbol;
     }
 
-    public double price() {
+    public Money price() {
         return price;
     }
 }

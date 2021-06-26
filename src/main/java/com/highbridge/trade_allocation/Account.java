@@ -1,12 +1,14 @@
 package com.highbridge.trade_allocation;
 
+import com.highbridge.trade_allocation.domain.sub.Money;
+
 public class Account {
     private final String investor;
-    private final double capital;
+    private final Money capital;
     private String stockSymbol;
     private double targetPercent;
 
-    public Account(String investor, double capital) {
+    public Account(String investor, Money capital) {
         this.investor = investor;
         this.capital = capital;
     }
@@ -17,16 +19,13 @@ public class Account {
     }
 
     public Integer maxShare(Stock stock) {
-        if (stock.symbol().equals(stockSymbol)) {
-            return Double.valueOf(capital * targetPercent * 0.01 / stock.price()).intValue();
-        }
-        return 0;
+        return marketValue(stock).getAmount().divide(stock.price().getAmount()).intValue();
     }
 
-    public Double marketValue(Stock stock) {
+    public Money marketValue(Stock stock) {
         if (stock.symbol().equals(stockSymbol)) {
-            return Double.valueOf(capital * targetPercent * 0.01);
+            return capital.times(targetPercent).times(0.01);
         }
-        return 0d;
+        return Money.dollars(0);
     }
 }
