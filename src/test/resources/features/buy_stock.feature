@@ -1,6 +1,6 @@
 Feature: Buy & Allocate a new Stock
 
-  Scenario Outline: Maximum share of Stock
+  Scenario Outline: Target Max Value & Maximum Share of Stock for Account
     Given an investor <Investor> has an account with <Capital> capital
     And an investor <Investor> sets a <Stock Symbol> Stock with target percent <Target Percent>
     When current price of <Stock Symbol> Stock is <Current Price>

@@ -1,19 +1,20 @@
 package com.highbridge.trade_allocation;
 
 import com.highbridge.trade_allocation.domain.sub.Money;
+import com.highbridge.trade_allocation.domain.sub.Percent;
 
 public class Account {
     private final String investor;
     private final Money capital;
     private String stockSymbol;
-    private double targetPercent;
+    private Percent targetPercent;
 
     public Account(String investor, Money capital) {
         this.investor = investor;
         this.capital = capital;
     }
 
-    public void setTargetPercent(String stockSymbol, double targetPercent) {
+    public void setTargetPercent(String stockSymbol, Percent targetPercent) {
         this.stockSymbol = stockSymbol;
         this.targetPercent = targetPercent;
     }
@@ -24,7 +25,7 @@ public class Account {
 
     public Money marketValue(Stock stock) {
         if (stock.symbol().equals(stockSymbol)) {
-            return capital.times(targetPercent).times(0.01);
+            return targetPercent.of(capital);
         }
         return Money.dollars(0);
     }

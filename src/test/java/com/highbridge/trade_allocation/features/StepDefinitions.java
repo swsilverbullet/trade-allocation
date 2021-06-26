@@ -3,6 +3,7 @@ package com.highbridge.trade_allocation.features;
 import com.highbridge.trade_allocation.Account;
 import com.highbridge.trade_allocation.Stock;
 import com.highbridge.trade_allocation.domain.sub.Money;
+import com.highbridge.trade_allocation.domain.sub.Percent;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -22,7 +23,7 @@ public class StepDefinitions implements En {
         });
         Given("^an investor (.*) sets a (.*) Stock with target percent (.*)$", (String investor, String stockSymbol, String targetPercent) -> {
             System.out.println(investor);
-            anAccount.setTargetPercent(stockSymbol, percentToDouble(targetPercent));
+            anAccount.setTargetPercent(stockSymbol, toPercent(targetPercent));
         });
         When("^current price of (.*) Stock is (.*)$", (String stockSymbol, String currentPrice) -> {
             aStock = new Stock(stockSymbol, toMoney(currentPrice));
@@ -48,8 +49,8 @@ public class StepDefinitions implements En {
         return Money.dollars(Double.valueOf(money.replaceAll("\\$|,", "")));
     }
 
-    Double percentToDouble(String percent) {
-        return Double.valueOf(percent.replaceAll("%", ""));
+    Percent toPercent(String percent) {
+        return Percent.of(Double.valueOf(percent.replaceAll("%", "")));
     }
 
     @Before
