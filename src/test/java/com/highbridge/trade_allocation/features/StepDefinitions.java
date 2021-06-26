@@ -16,14 +16,25 @@ public class StepDefinitions implements En {
     }
 
     public StepDefinitions() {
-        Given("^nothing given (.*)$", (String given1) -> {
-            System.out.println(given1);
+        Given("^an investor (.*) has an account with (.*) capital$", (String investor, String capital) -> {
+            System.out.println(investor);
+            System.out.println(capital);
         });
-        When("^nothing when (.*)$", (String when1) -> {
-            System.out.println(when1);
+        Given("^an investor (.*) sets a (.*) Stock with target percent (.*)$", (String investor, String stockSymbol, String targetPercent) -> {
+            System.out.println(investor);
+            System.out.println(stockSymbol);
+            System.out.println(targetPercent);
         });
-        Then("^nothing then (.*)$", (String then1) -> {
-            System.out.println(then1);
+        When("^current price of (.*) Stock is (.*)$", (String stockSymbol, String currentPrice) -> {
+            System.out.println(stockSymbol);
+            System.out.println(currentPrice);
+        });
+        Then("^an investor (.*) can maintain a (.*) Stock up to (.*)$", (String investor, String stockSymbol, String marketValue) -> {
+            System.out.println(investor);
+            System.out.println(stockSymbol);
+            System.out.println(marketValue);
         });
     }
+
+
 }
