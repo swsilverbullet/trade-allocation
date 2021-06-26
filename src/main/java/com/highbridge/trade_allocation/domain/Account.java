@@ -40,7 +40,7 @@ public class Account {
         return marketValue(stock).getAmount().divide(price.getAmount()).intValue();
     }
 
-    private Integer currentShare(Stock stock) {
+    public Integer currentShare(Stock stock) {
         // TODO BL - assuming that we have only one stock in place in holdings
         return holdings.stream().filter(h -> h.stockSymbol().equals(stock.symbol())).mapToInt(h -> h.quantity()).sum();
     }

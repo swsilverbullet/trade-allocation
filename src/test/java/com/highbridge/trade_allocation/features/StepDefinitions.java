@@ -32,6 +32,16 @@ public class StepDefinitions implements En {
             Account account = accountRepository.findByInvestor(investor);
             account.add(stockSymbol, toPercent(targetPercent));
         });
+        When("^a portfolio manager buy (.*) share of (.*) Stock$", (Integer quantity, String stockSymbol) -> {
+            // TODO BL - let's improve this logic. now it simply checks the number of max share portfolio manager can buy
+            Portfolio portfolio = new Portfolio();
+            accountRepository.all().forEach(a -> portfolio.add(a));
+            assertThat(portfolio.entitledToBuyUpTo(stockSymbol, exchangeRepository.price(stockSymbol)) <= quantity, is(true));
+        });
+        When("^a portfolio manager allocates (.*) shares of (.*) Stock to (.*)'s account$", (Integer quantity, String stockSymbol, String investor) -> {
+            Account account = accountRepository.findByInvestor(investor);
+            account.add(new Holding(stockSymbol, exchangeRepository.price(stockSymbol), quantity));
+        });
 
         Then("^an investor (.*) has an account with (.*) for (.*) Stock$", (String investor, String marketValue, String stockSymbol) -> {
             Account account = accountRepository.findByInvestor(investor);
@@ -43,11 +53,14 @@ public class StepDefinitions implements En {
         });
         Then("^an investor (.*) can own (.*) more shares of (.*) Stock$", (String investor, Integer extraShare, String stockSymbol) -> {
         });
-
         Then("^a portfolio manager is entitled to buy up to (.*) share of (.*) Stock$", (Integer maxShareToBuy, String stockSymbol) -> {
             Portfolio portfolio = new Portfolio();
             accountRepository.all().forEach(a -> portfolio.add(a));
             assertThat(portfolio.entitledToBuyUpTo(stockSymbol, exchangeRepository.price(stockSymbol)), is(maxShareToBuy));
+        });
+        Then("^an investor (.*) has (.*) shares of (.*) Stock$", (String investor, Integer quantity, String stockSymbol) -> {
+            Account account = accountRepository.findByInvestor(investor);
+            assertThat(account.currentShare(new Stock(stockSymbol)), is(quantity));
         });
     }
 
