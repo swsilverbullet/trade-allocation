@@ -30,21 +30,21 @@ public class Account {
         this.targetPercents.put(stockSymbol, targetPercent);
     }
 
-    public Integer maxShare(Stock stock, Money price) {
+    public Integer maxShare(String stock, Money price) {
         return marketValue(stock).getAmount().divide(price.getAmount()).intValue();
     }
 
-    public Integer currentShare(Stock stock) {
+    public Integer currentShare(String stock) {
         // TODO BL - assuming that we have only one stock in place in holdings
-        return holdings.stream().filter(h -> h.stockSymbol().equals(stock.symbol())).mapToInt(h -> h.quantity()).sum();
+        return holdings.stream().filter(h -> h.stockSymbol().equals(stock)).mapToInt(h -> h.quantity()).sum();
     }
 
-    public Integer availableShare(Stock stock, Money price) {
+    public Integer availableShare(String stock, Money price) {
         return maxShare(stock, price) - currentShare(stock);
     }
 
-    public Money marketValue(Stock stock) {
-        return targetPercents.get(stock.symbol()).of(capital);
+    public Money marketValue(String stock) {
+        return targetPercents.get(stock).of(capital);
     }
 
     public String investor() {

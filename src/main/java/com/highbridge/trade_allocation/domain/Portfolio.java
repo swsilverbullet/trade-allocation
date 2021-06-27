@@ -24,30 +24,30 @@ public class Portfolio {
         this.newTrade.put(stock, quantity);
     }
 
-    public Integer entitledToBuyUpTo(String stockSymbol, Money price) {
-        return accounts.values().stream().mapToInt(a -> a.availableShare(new Stock(stockSymbol), price)).sum();
+    public Integer entitledToBuyUpTo(String stock, Money price) {
+        return accounts.values().stream().mapToInt(a -> a.availableShare(stock, price)).sum();
     }
 
-    public Double suggestedFinalPosition(Account account, Stock stock) {
+    public Double suggestedFinalPosition(Account account, String stock) {
         Money accountMarketValue = account.marketValue(stock);
-        Integer allShare = allShareInPosition(stock, newTrade.get(stock.symbol()));
+        Integer allShare = allShareInPosition(stock, newTrade.get(stock));
         return accountMarketValue.times(allShare).divide(totalTargetMarketValue(stock)).getAmount().doubleValue();
     }
 
-    public Double suggestedAdditionalPosition(Account account, Stock stock) {
+    public Double suggestedAdditionalPosition(Account account, String stock) {
         return BigDecimal.valueOf(suggestedFinalPosition(account, stock)).add(BigDecimal.valueOf(account.currentShare(stock)).setScale(2).negate()).doubleValue();
     }
 
-    private Money totalTargetMarketValue(Stock stock) {
+    private Money totalTargetMarketValue(String stock) {
         return Money.dollars(accounts.values().stream().mapToDouble(a -> a.marketValue(stock).getAmount().doubleValue()).sum());
     }
 
-    private Integer allShareInPosition(Stock stock, Integer newShare) {
+    private Integer allShareInPosition(String stock, Integer newShare) {
         return accounts.values().stream().mapToInt(a -> a.currentShare(stock)).sum() + newShare;
     }
 
     public void allocateNew(String stock) {
-        List<Pair<String, Integer>> additionalPositions = orderedAdditionalPositions(new Stock(stock));
+        List<Pair<String, Integer>> additionalPositions = orderedAdditionalPositions(stock);
 
         Integer remainingShare = newTrade.get(stock);
         for (int i = 0; i < additionalPositions.size(); i++) {
@@ -63,7 +63,7 @@ public class Portfolio {
         }
     }
 
-    private List<Pair<String, Integer>> orderedAdditionalPositions(Stock stock) {
+    private List<Pair<String, Integer>> orderedAdditionalPositions(String stock) {
         List<Account> ordered = new ArrayList<>(accounts.values());
         Collections.sort(ordered, new AllocationAscendingComparator(this, stock));
 
@@ -78,9 +78,9 @@ public class Portfolio {
 
     class AllocationAscendingComparator implements Comparator<Account> {
         private final Portfolio portfolio;
-        private final Stock stock;
+        private final String stock;
 
-        public AllocationAscendingComparator(Portfolio portfolio, Stock stock) {
+        public AllocationAscendingComparator(Portfolio portfolio, String stock) {
             this.portfolio = portfolio;
             this.stock = stock;
         }

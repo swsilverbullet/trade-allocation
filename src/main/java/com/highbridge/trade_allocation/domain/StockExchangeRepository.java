@@ -12,8 +12,8 @@ public class StockExchangeRepository {
         this.prices = new HashMap<>();
     }
 
-    public void add(Stock stock, Money price) {
-        this.prices.put(stock.symbol(), price);
+    public void add(String stock, Money price) {
+        this.prices.put(stock, price);
     }
 
     public Money price(String stockSymbol) {

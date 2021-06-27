@@ -18,61 +18,61 @@ public class StepDefinitions implements En {
         Given("^an investor (.*) has an account with (.*) capital$", (String investor, String capital) -> {
             accountRepository.addAccount(new Account(investor, toMoney(capital)));
         });
-        Given("^an investor (.*) sets a (.*) stock with target percent (.*)$", (String investor, String stockSymbol, String targetPercent) -> {
-            accountRepository.findByInvestor(investor).add(stockSymbol, toPercent(targetPercent));
+        Given("^an investor (.*) sets a (.*) stock with target percent (.*)$", (String investor, String stock, String targetPercent) -> {
+            accountRepository.findByInvestor(investor).add(stock, toPercent(targetPercent));
         });
 
-        When("^current price of (.*) stock is (.*)$", (String stockSymbol, String currentPrice) -> {
-            exchangeRepository.add(new Stock(stockSymbol), toMoney(currentPrice));
+        When("^current price of (.*) stock is (.*)$", (String stock, String currentPrice) -> {
+            exchangeRepository.add(stock, toMoney(currentPrice));
         });
-        When("^an investor (.*) has (.*) shares of (.*) stock with current price (.*) in the account$", (String investor, Integer ownedQuantity, String stockSymbol, String currentPrice) -> {
+        When("^an investor (.*) has (.*) shares of (.*) stock with current price (.*) in the account$", (String investor, Integer ownedQuantity, String stock, String currentPrice) -> {
             Account account = accountRepository.findByInvestor(investor);
-            account.add(new Holding(stockSymbol, toMoney(currentPrice), ownedQuantity));
+            account.add(new Holding(stock, toMoney(currentPrice), ownedQuantity));
         });
-        When("^an investor (.*) sets (.*) target percent of (.*) stock$", (String investor, String targetPercent, String stockSymbol) -> {
+        When("^an investor (.*) sets (.*) target percent of (.*) stock$", (String investor, String targetPercent, String stock) -> {
             Account account = accountRepository.findByInvestor(investor);
-            account.add(stockSymbol, toPercent(targetPercent));
+            account.add(stock, toPercent(targetPercent));
         });
-        When("^a portfolio manager buy (.*) share of (.*) stock$", (Integer quantity, String stockSymbol) -> {
+        When("^a portfolio manager buy (.*) share of (.*) stock$", (Integer quantity, String stock) -> {
             // TODO BL - let's improve this logic. now it simply checks the number of max share portfolio manager can buy
             accountRepository.all().forEach(a -> portfolio.add(a));
-            portfolio.addNewTrade(stockSymbol, quantity);
-            assertThat(portfolio.entitledToBuyUpTo(stockSymbol, exchangeRepository.price(stockSymbol)) >= quantity, is(true));
+            portfolio.addNewTrade(stock, quantity);
+            assertThat(portfolio.entitledToBuyUpTo(stock, exchangeRepository.price(stock)) >= quantity, is(true));
         });
-        When("^a portfolio manager allocates (.*) shares of (.*) stock to (.*)'s account$", (Integer quantity, String stockSymbol, String investor) -> {
+        When("^a portfolio manager allocates (.*) shares of (.*) stock to (.*)'s account$", (Integer quantity, String stock, String investor) -> {
             Account account = accountRepository.findByInvestor(investor);
-            account.add(new Holding(stockSymbol, exchangeRepository.price(stockSymbol), quantity));
+            account.add(new Holding(stock, exchangeRepository.price(stock), quantity));
         });
-        When("^a portfolio manager allocates the new (.*) stock$", (String stockSymbol) -> {
-            portfolio.allocateNew(stockSymbol);
+        When("^a portfolio manager allocates the new (.*) stock$", (String stock) -> {
+            portfolio.allocateNew(stock);
         });
 
-        Then("^an investor (.*) has an account with (.*) for (.*) stock$", (String investor, String marketValue, String stockSymbol) -> {
+        Then("^an investor (.*) has an account with (.*) for (.*) stock$", (String investor, String marketValue, String stock) -> {
             Account account = accountRepository.findByInvestor(investor);
-            assertThat(account.marketValue(new Stock(stockSymbol)), is(toMoney(marketValue)));
+            assertThat(account.marketValue(stock), is(toMoney(marketValue)));
         });
-        Then("^an investor (.*) can maintain a (.*) stock up to (.*) share$", (String investor, String stockSymbol, Integer maxShare) -> {
-            Money price = exchangeRepository.price(stockSymbol);
-            assertThat(accountRepository.findByInvestor(investor).maxShare(new Stock(stockSymbol), price), is(maxShare));
+        Then("^an investor (.*) can maintain a (.*) stock up to (.*) share$", (String investor, String stock, Integer maxShare) -> {
+            Money price = exchangeRepository.price(stock);
+            assertThat(accountRepository.findByInvestor(investor).maxShare(stock, price), is(maxShare));
         });
-        Then("^an investor (.*) can own (.*) more shares of (.*) stock$", (String investor, Integer extraShare, String stockSymbol) -> {
+        Then("^an investor (.*) can own (.*) more shares of (.*) stock$", (String investor, Integer extraShare, String stock) -> {
         });
-        Then("^a portfolio manager is entitled to buy up to (.*) share of (.*) stock$", (Integer maxShareToBuy, String stockSymbol) -> {
+        Then("^a portfolio manager is entitled to buy up to (.*) share of (.*) stock$", (Integer maxShareToBuy, String stock) -> {
             accountRepository.all().forEach(a -> portfolio.add(a));
-            assertThat(portfolio.entitledToBuyUpTo(stockSymbol, exchangeRepository.price(stockSymbol)), is(maxShareToBuy));
+            assertThat(portfolio.entitledToBuyUpTo(stock, exchangeRepository.price(stock)), is(maxShareToBuy));
         });
-        Then("^an investor (.*) has (.*) shares of (.*) stock$", (String investor, Integer quantity, String stockSymbol) -> {
+        Then("^an investor (.*) has (.*) shares of (.*) stock$", (String investor, Integer quantity, String stock) -> {
             Account account = accountRepository.findByInvestor(investor);
-            assertThat(account.currentShare(new Stock(stockSymbol)), is(quantity));
+            assertThat(account.currentShare(stock), is(quantity));
         });
-        Then("^a portfolio manager suggests total (.*) shares of (.*) stock in (.*)'s account$", (Double totalShare, String stockSymbol, String investor) -> {
+        Then("^a portfolio manager suggests total (.*) shares of (.*) stock in (.*)'s account$", (Double totalShare, String stock, String investor) -> {
             Account account = accountRepository.findByInvestor(investor);
-            Double finalPosition = portfolio.suggestedFinalPosition(account, new Stock(stockSymbol));
+            Double finalPosition = portfolio.suggestedFinalPosition(account, stock);
             assertThat(finalPosition, is(totalShare));
         });
-        Then("^a portfolio manager suggests additional (.*) shares of (.*) stock in (.*)'s account$", (String additionalShare, String stockSymbol, String investor) -> {
+        Then("^a portfolio manager suggests additional (.*) shares of (.*) stock in (.*)'s account$", (String additionalShare, String stock, String investor) -> {
             Account account = accountRepository.findByInvestor(investor);
-            Double additionalPosition = portfolio.suggestedAdditionalPosition(account, new Stock(stockSymbol));
+            Double additionalPosition = portfolio.suggestedAdditionalPosition(account, stock);
             assertThat(additionalPosition, is(toMoney(additionalShare).getAmount().doubleValue()));
         });
     }
@@ -95,7 +95,7 @@ public class StepDefinitions implements En {
     }
 
     private void initExchangeRepository() {
-        exchangeRepository.add(new Stock("GOOGLE"), Money.dollars(20));
-        exchangeRepository.add(new Stock("APPLE"), Money.dollars(10));
+        exchangeRepository.add("GOOGLE", Money.dollars(20));
+        exchangeRepository.add("APPLE", Money.dollars(10));
     }
 }
