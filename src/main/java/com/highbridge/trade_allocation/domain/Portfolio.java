@@ -47,14 +47,29 @@ public class Portfolio {
     }
 
     public void allocateNew(String stock) {
-        List<Account> ordered = new ArrayList<>(accounts.values());
-        Collections.sort(ordered, new AllocationAscendingComparator(this, new Stock(stock)));
+        List<Pair<String, Integer>> additionalPositions = orderedAdditionalPositions(new Stock(stock));
 
-        List<Pair<String, Integer>> result = ordered.stream()
-                .map(a -> new Pair<>(a.investor(), round(this.suggestedAdditionalPosition(a, new Stock(stock)))))
+        Integer remainingShare = newTrade.get(stock);
+        for (int i = 0; i < additionalPositions.size(); i++) {
+            Account a = accounts.get(additionalPositions.get(i).getValue0());
+            if (i < additionalPositions.size() - 1) {
+                Integer additionalShare = additionalPositions.get(i).getValue1();
+                a.add(new Holding(stock, Money.dollars(20), additionalShare));
+                remainingShare -= additionalShare;
+            }
+            else {
+                a.add(new Holding(stock, Money.dollars(20), remainingShare));
+            }
+        }
+    }
+
+    private List<Pair<String, Integer>> orderedAdditionalPositions(Stock stock) {
+        List<Account> ordered = new ArrayList<>(accounts.values());
+        Collections.sort(ordered, new AllocationAscendingComparator(this, stock));
+
+        return ordered.stream()
+                .map(a -> new Pair<>(a.investor(), round(this.suggestedAdditionalPosition(a, stock))))
                 .collect(Collectors.toList());
-        // TODO BL - 20$ ?
-        result.forEach(p -> accounts.get(p.getValue0()).add(new Holding(stock, Money.dollars(20), p.getValue1())));
     }
 
     Integer round(Double d) {
