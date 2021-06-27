@@ -28,6 +28,6 @@ Feature: Sell & de-allocate the stocks from accounts
 
   Scenario: Basic deallocation logic for sold shares
     When a portfolio manager sell 20 share of APPLE stock
-    And a portfolio manager deallocates the sold APPLE stock
+    And a portfolio manager reallocates the sold APPLE stock
     Then an investor John has 11 shares of APPLE stock
     And an investor Sarah has 44 shares of APPLE stock

@@ -27,6 +27,6 @@ Feature: Buy & allocate stocks in accounts
 
   Scenario: Basic allocation logic for new shares
     When a portfolio manager buy 100 share of GOOGLE stock
-    And a portfolio manager allocates the new GOOGLE stock
+    And a portfolio manager reallocates the new GOOGLE stock
     Then an investor John has 91 shares of GOOGLE stock
     And an investor Sarah has 69 shares of GOOGLE stock

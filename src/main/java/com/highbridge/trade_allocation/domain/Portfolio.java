@@ -54,7 +54,7 @@ public class Portfolio {
         return accounts.values().stream().mapToInt(a -> a.currentShare(stock)).sum() + newShare;
     }
 
-    public void allocateNew(String stock) {
+    public void reallocateHoldings(String stock) {
         List<Pair<String, Integer>> additionalPositions = orderedAdditionalPositions(stock);
 
         Integer remainingShare = trades.get(stock).singedQuantity();
