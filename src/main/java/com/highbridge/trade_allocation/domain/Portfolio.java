@@ -37,17 +37,18 @@ public class Portfolio {
     }
 
     Double suggestedFinalPosition(Account account, String stock) {
-        Money accountMarketValue = account.marketValue(stock);
+        Money accountStockHoldingCap = account.stockHoldingCap(stock);
+        Money portfolioStockHoldingCap = stockHoldingCap(stock);
         Integer allShare = allShareInPosition(stock, trades.get(stock).singedQuantity());
-        return accountMarketValue.times(allShare).divide(totalTargetMarketValue(stock)).getAmount().doubleValue();
+        return accountStockHoldingCap.times(allShare).divide(portfolioStockHoldingCap).getAmount().doubleValue();
     }
 
     Double suggestedAdditionalPosition(Account account, String stock) {
         return BigDecimal.valueOf(suggestedFinalPosition(account, stock)).add(BigDecimal.valueOf(account.currentShare(stock)).setScale(2).negate()).doubleValue();
     }
 
-    private Money totalTargetMarketValue(String stock) {
-        return Money.dollars(accounts.values().stream().mapToDouble(a -> a.marketValue(stock).getAmount().doubleValue()).sum());
+    private Money stockHoldingCap(String stock) {
+        return Money.dollars(accounts.values().stream().mapToDouble(a -> a.stockHoldingCap(stock).getAmount().doubleValue()).sum());
     }
 
     private Integer allShareInPosition(String stock, Integer newShare) {

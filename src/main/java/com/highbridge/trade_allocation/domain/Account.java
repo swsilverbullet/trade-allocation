@@ -34,7 +34,7 @@ public class Account {
     }
 
     Integer maxShare(String stock, Money price) {
-        return marketValue(stock).getAmount().divide(price.getAmount()).intValue();
+        return stockHoldingCap(stock).getAmount().divide(price.getAmount()).intValue();
     }
 
     Integer currentShare(String stock) {
@@ -46,7 +46,8 @@ public class Account {
         return maxShare(stock, price) - currentShare(stock);
     }
 
-    Money marketValue(String stock) {
+    // maximumHoldingValue
+    Money stockHoldingCap(String stock) {
         return targetPercents.get(stock).of(capital);
     }
 

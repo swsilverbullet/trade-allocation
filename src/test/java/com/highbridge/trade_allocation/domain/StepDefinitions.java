@@ -58,7 +58,7 @@ public class StepDefinitions implements En {
         });
         Then("^an investor (.*) has an account with (.*) for (.*) stock$", (String investor, String marketValue, String stock) -> {
             Account account = accountRepository.findByInvestor(investor);
-            assertThat(account.marketValue(stock), is(toMoney(marketValue)));
+            assertThat(account.stockHoldingCap(stock), is(toMoney(marketValue)));
         });
         Then("^an investor (.*) can maintain a (.*) stock up to (.*) share$", (String investor, String stock, Integer maxShare) -> {
             Money price = stockExchange.price(stock);
