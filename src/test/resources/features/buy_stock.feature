@@ -30,23 +30,3 @@ Feature: Buy & allocate stocks in accounts
     And a portfolio manager allocates the new GOOGLE stock
     Then an investor John has 91 shares of GOOGLE stock
     And an investor Sarah has 69 shares of GOOGLE stock
-
-
-  #  Scenario Outline: Maximum share to buy & allocate
-#    Given an investor John has a capability to own extra 50 share of GOOGLE stock
-#    And an investor Sarah has a capability to own extra 65 share of GOOGLE stock
-#    Then a portfolio manager Mary entitled to buy up to 115 share of GOOGLE stock
-#    And a portfolio manager Mary can allocate the 50 share of GOOGLE stock into John account
-#    And a portfolio manager Mary can allocate the 65 share of GOOGLE stock into Sarah account
-
-#    Given an investor John has an account with $50,000 capital
-#    And an investor Sarah has an account with $150,000 capital
-#    When an investor John has 50 shares of GOOGLE stock with current price $20 in his account
-#    And John sets 4% as target percent for GOOGLE stock
-#    And an investor John has 25 shares of APPLE stock with current price $10 in his account
-#    And John sets 1.5% as target percent for APPLE stock
-#    When an investor Sarah has 10 shares of GOOGLE stock with current price $20 in her account
-#    And Sarah sets 1% as target percent for GOOGLE stock
-#    And an investor Sarah has 15 shares of APPLE stock with current price $10 in the account
-#    And Sarah sets 2% as target percent for APPLE stock
-#    Then a portfolio manager Mary buy

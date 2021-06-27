@@ -28,6 +28,10 @@ public class Portfolio {
         return accounts.values().stream().mapToInt(a -> a.availableShare(stock, price)).sum();
     }
 
+    public Integer entitledToSellUpTo(String stock) {
+        return accounts.values().stream().mapToInt(a -> a.currentShare(stock)).sum();
+    }
+
     public Double suggestedFinalPosition(Account account, String stock) {
         Money accountMarketValue = account.marketValue(stock);
         Integer allShare = allShareInPosition(stock, newTrade.get(stock));
@@ -72,7 +76,7 @@ public class Portfolio {
                 .collect(Collectors.toList());
     }
 
-    Integer round(Double d) {
+    private Integer round(Double d) {
         return Long.valueOf(Math.round(d)).intValue(); //NOTE: practically speaking, int conversion is safe here
     }
 

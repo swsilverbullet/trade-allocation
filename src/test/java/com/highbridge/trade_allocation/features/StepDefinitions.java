@@ -39,6 +39,7 @@ public class StepDefinitions implements En {
             portfolio.addNewTrade(stock, quantity);
             assertThat(portfolio.entitledToBuyUpTo(stock, exchangeRepository.price(stock)) >= quantity, is(true));
         });
+
         When("^a portfolio manager allocates (.*) shares of (.*) stock to (.*)'s account$", (Integer quantity, String stock, String investor) -> {
             Account account = accountRepository.findByInvestor(investor);
             account.add(new Holding(stock, exchangeRepository.price(stock), quantity));
@@ -60,6 +61,10 @@ public class StepDefinitions implements En {
         Then("^a portfolio manager is entitled to buy up to (.*) share of (.*) stock$", (Integer maxShareToBuy, String stock) -> {
             accountRepository.all().forEach(a -> portfolio.add(a));
             assertThat(portfolio.entitledToBuyUpTo(stock, exchangeRepository.price(stock)), is(maxShareToBuy));
+        });
+        Then("^a portfolio manager is entitled to sell up to (.*) share of (.*) stock$", (Integer maxShareToSell, String stock) -> {
+            accountRepository.all().forEach(a -> portfolio.add(a));
+            assertThat(portfolio.entitledToSellUpTo(stock), is(maxShareToSell));
         });
         Then("^an investor (.*) has (.*) shares of (.*) stock$", (String investor, Integer quantity, String stock) -> {
             Account account = accountRepository.findByInvestor(investor);
