@@ -9,15 +9,15 @@ public class Holding {
         this.quantity = quantity;
     }
 
-    public String stock() {
+    String stock() {
         return stock;
     }
 
-    public Integer quantity() {
+    Integer quantity() {
         return quantity;
     }
 
-    public Holding merge(Holding other) {
+    Holding merge(Holding other) {
         if (this.stock.equals(other.stock)) {
             return new Holding(this.stock, this.quantity + other.quantity);
         }

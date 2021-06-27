@@ -1,4 +1,4 @@
-package com.highbridge.trade_allocation.features;
+package com.highbridge.trade_allocation.domain;
 
 import com.highbridge.trade_allocation.domain.*;
 import com.highbridge.trade_allocation.domain.generic.Money;

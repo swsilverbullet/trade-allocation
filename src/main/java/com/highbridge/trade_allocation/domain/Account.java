@@ -3,9 +3,7 @@ package com.highbridge.trade_allocation.domain;
 import com.highbridge.trade_allocation.domain.generic.Money;
 import com.highbridge.trade_allocation.domain.generic.Percent;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Account {
@@ -22,7 +20,7 @@ public class Account {
         this.targetPercents = new HashMap<>();
     }
 
-    public void add(Holding holding) {
+    void add(Holding holding) {
         if (this.holdings.containsKey(holding.stock())) {
             this.holdings.put(holding.stock(), this.holdings.get(holding.stock()).merge(holding));
         }
@@ -31,28 +29,28 @@ public class Account {
         }
     }
 
-    public void add(String stock, Percent targetPercent) {
+    void add(String stock, Percent targetPercent) {
         this.targetPercents.put(stock, targetPercent);
     }
 
-    public Integer maxShare(String stock, Money price) {
+    Integer maxShare(String stock, Money price) {
         return marketValue(stock).getAmount().divide(price.getAmount()).intValue();
     }
 
-    public Integer currentShare(String stock) {
+    Integer currentShare(String stock) {
         // TODO BL - assuming that we have only one stock in place in holdings
         return holdings.values().stream().filter(h -> h.stock().equals(stock)).mapToInt(h -> h.quantity()).sum();
     }
 
-    public Integer availableShare(String stock, Money price) {
+    Integer availableShare(String stock, Money price) {
         return maxShare(stock, price) - currentShare(stock);
     }
 
-    public Money marketValue(String stock) {
+    Money marketValue(String stock) {
         return targetPercents.get(stock).of(capital);
     }
 
-    public String investor() {
+    String investor() {
         return this.investor;
     }
 }

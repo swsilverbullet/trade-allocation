@@ -16,33 +16,33 @@ public class Portfolio {
         this.trades = new HashMap<>();
     }
 
-    public void add(Account account) {
+    void add(Account account) {
         this.accounts.put(account.investor(), account);
     }
 
-    public void addBuyTrade(String stock, Integer quantity) {
+    void addBuyTrade(String stock, Integer quantity) {
         this.trades.put(stock, Trade.buy(stock, quantity, Money.dollars(0)));
     }
 
-    public void addSellTrade(String stock, Integer quantity) {
+    void addSellTrade(String stock, Integer quantity) {
         this.trades.put(stock, Trade.sell(stock, quantity, Money.dollars(0)));
     }
 
-    public Integer entitledToBuyUpTo(String stock, Money price) {
+    Integer entitledToBuyUpTo(String stock, Money price) {
         return accounts.values().stream().mapToInt(a -> a.availableShare(stock, price)).sum();
     }
 
-    public Integer entitledToSellUpTo(String stock) {
+    Integer entitledToSellUpTo(String stock) {
         return accounts.values().stream().mapToInt(a -> a.currentShare(stock)).sum();
     }
 
-    public Double suggestedFinalPosition(Account account, String stock) {
+    Double suggestedFinalPosition(Account account, String stock) {
         Money accountMarketValue = account.marketValue(stock);
         Integer allShare = allShareInPosition(stock, trades.get(stock).singedQuantity());
         return accountMarketValue.times(allShare).divide(totalTargetMarketValue(stock)).getAmount().doubleValue();
     }
 
-    public Double suggestedAdditionalPosition(Account account, String stock) {
+    Double suggestedAdditionalPosition(Account account, String stock) {
         return BigDecimal.valueOf(suggestedFinalPosition(account, stock)).add(BigDecimal.valueOf(account.currentShare(stock)).setScale(2).negate()).doubleValue();
     }
 
@@ -54,7 +54,7 @@ public class Portfolio {
         return accounts.values().stream().mapToInt(a -> a.currentShare(stock)).sum() + newShare;
     }
 
-    public void reallocateHoldings(String stock) {
+    void reallocateHoldings(String stock) {
         List<Pair<String, Integer>> additionalPositions = orderedAdditionalPositions(stock);
 
         Integer remainingShare = trades.get(stock).singedQuantity();

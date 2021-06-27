@@ -12,11 +12,11 @@ public class StockExchange {
         this.prices = new HashMap<>();
     }
 
-    public void add(String stock, Money price) {
+    void add(String stock, Money price) {
         this.prices.put(stock, price);
     }
 
-    public Money price(String stock) {
+    Money price(String stock) {
         return prices.get(stock);
     }
 }
