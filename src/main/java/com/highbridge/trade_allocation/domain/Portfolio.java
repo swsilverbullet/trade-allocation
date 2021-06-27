@@ -9,13 +9,11 @@ import java.util.stream.Collectors;
 
 public class Portfolio {
     private final Map<String, Account> accounts;
-    private final Map<String, Integer> buyTrades;
-    private final Map<String, Integer> sellTrades;
+    private final Map<String, Trade> trades;
 
     public Portfolio() {
         this.accounts = new HashMap<>();
-        this.buyTrades = new HashMap<>();
-        this.sellTrades = new HashMap<>();
+        this.trades = new HashMap<>();
     }
 
     public void add(Account account) {
@@ -23,11 +21,11 @@ public class Portfolio {
     }
 
     public void addBuyTrade(String stock, Integer quantity) {
-        this.buyTrades.put(stock, quantity);
+        this.trades.put(stock, Trade.buy(stock, quantity, Money.dollars(0)));
     }
 
     public void addSellTrade(String stock, Integer quantity) {
-        this.sellTrades.put(stock, quantity);
+        this.trades.put(stock, Trade.sell(stock, quantity, Money.dollars(0)));
     }
 
     public Integer entitledToBuyUpTo(String stock, Money price) {
@@ -40,7 +38,7 @@ public class Portfolio {
 
     public Double suggestedFinalPosition(Account account, String stock) {
         Money accountMarketValue = account.marketValue(stock);
-        Integer allShare = allShareInPosition(stock, buyTrades.get(stock));
+        Integer allShare = allShareInPosition(stock, trades.get(stock).singedQuantity());
         return accountMarketValue.times(allShare).divide(totalTargetMarketValue(stock)).getAmount().doubleValue();
     }
 
@@ -59,7 +57,7 @@ public class Portfolio {
     public void allocateNew(String stock) {
         List<Pair<String, Integer>> additionalPositions = orderedAdditionalPositions(stock);
 
-        Integer remainingShare = buyTrades.get(stock);
+        Integer remainingShare = trades.get(stock).singedQuantity();
         for (int i = 0; i < additionalPositions.size(); i++) {
             Account a = accounts.get(additionalPositions.get(i).getValue0());
             if (i < additionalPositions.size() - 1) {

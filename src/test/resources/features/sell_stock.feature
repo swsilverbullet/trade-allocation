@@ -17,3 +17,17 @@ Feature: Sell & de-allocate the stocks from accounts
     And a portfolio manager deallocates 15 shares of APPLE stock from Sarah's account
     Then an investor John has 20 shares of APPLE stock
     And an investor Sarah has 35 shares of APPLE stock
+
+  # TODO BL - double check the value below
+  Scenario: Suggesting final position for given stock
+    When a portfolio manager sell 20 share of APPLE stock
+    Then a portfolio manager suggests total 11.0 shares of APPLE stock in John's account
+    And a portfolio manager suggests total 44.0 shares of APPLE stock in Sarah's account
+    And a portfolio manager suggests additional -14.0 shares of APPLE stock in John's account
+    And a portfolio manager suggests additional -6.0 shares of APPLE stock in Sarah's account
+
+  Scenario: Basic deallocation logic for sold shares
+    When a portfolio manager sell 20 share of APPLE stock
+    And a portfolio manager deallocates the sold APPLE stock
+    Then an investor John has 11 shares of APPLE stock
+    And an investor Sarah has 44 shares of APPLE stock

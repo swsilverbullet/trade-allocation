@@ -53,11 +53,12 @@ public class StepDefinitions implements En {
             Account account = accountRepository.findByInvestor(investor);
             account.add(new Holding(stock, -quantity));
         });
-
         When("^a portfolio manager allocates the new (.*) stock$", (String stock) -> {
             portfolio.allocateNew(stock);
         });
-
+        When("^a portfolio manager deallocates the sold (.*) stock$", (String stock) -> {
+            portfolio.allocateNew(stock);
+        });
         Then("^an investor (.*) has an account with (.*) for (.*) stock$", (String investor, String marketValue, String stock) -> {
             Account account = accountRepository.findByInvestor(investor);
             assertThat(account.marketValue(stock), is(toMoney(marketValue)));
