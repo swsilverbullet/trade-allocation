@@ -1,4 +1,4 @@
-Feature: Basic stock allocation rules
+Feature: Stock position & allocation basic rules
 
   Scenario Outline: What is "Target Max Value" & "Target Maximum Share"
     Given an investor <Investor> has an account with <Capital> capital

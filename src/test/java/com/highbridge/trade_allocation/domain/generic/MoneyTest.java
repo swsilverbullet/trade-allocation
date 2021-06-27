@@ -1,4 +1,4 @@
-package com.highbridge.trade_allocation.domain.sub;
+package com.highbridge.trade_allocation.domain.generic;
 
 import org.junit.Test;
 

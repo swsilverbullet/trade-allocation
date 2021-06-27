@@ -1,6 +1,6 @@
 package com.highbridge.trade_allocation.domain;
 
-import com.highbridge.trade_allocation.domain.sub.Money;
+import com.highbridge.trade_allocation.domain.generic.Money;
 
 import java.util.HashMap;
 import java.util.Map;

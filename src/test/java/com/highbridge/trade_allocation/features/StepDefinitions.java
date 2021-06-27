@@ -1,8 +1,8 @@
 package com.highbridge.trade_allocation.features;
 
 import com.highbridge.trade_allocation.domain.*;
-import com.highbridge.trade_allocation.domain.sub.Money;
-import com.highbridge.trade_allocation.domain.sub.Percent;
+import com.highbridge.trade_allocation.domain.generic.Money;
+import com.highbridge.trade_allocation.domain.generic.Percent;
 import io.cucumber.java.Before;
 import io.cucumber.java8.En;
 

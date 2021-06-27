@@ -1,6 +1,6 @@
 package com.highbridge.trade_allocation.domain;
 
-import com.highbridge.trade_allocation.domain.sub.Money;
+import com.highbridge.trade_allocation.domain.generic.Money;
 
 public class Holding {
     private final String stockSymbol;

@@ -1,7 +1,7 @@
 package com.highbridge.trade_allocation.domain;
 
-import com.highbridge.trade_allocation.domain.sub.Money;
-import com.highbridge.trade_allocation.domain.sub.Percent;
+import com.highbridge.trade_allocation.domain.generic.Money;
+import com.highbridge.trade_allocation.domain.generic.Percent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
