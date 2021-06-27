@@ -15,5 +15,5 @@ Feature: Sell & de-allocate the stocks from accounts
     When a portfolio manager sell 20 share of APPLE stock
     And a portfolio manager deallocates 5 shares of APPLE stock from John's account
     And a portfolio manager deallocates 15 shares of APPLE stock from Sarah's account
-    Then an investor John has 20 shares of GOOGLE stock
-    And an investor Sarah has 35 shares of GOOGLE stock
+    Then an investor John has 20 shares of APPLE stock
+    And an investor Sarah has 35 shares of APPLE stock
