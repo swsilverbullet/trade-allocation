@@ -11,16 +11,16 @@ public class Account {
     private final Money capital;
 
     private final Map<String, Holding> holdings;
-    private final Map<String, Percent> targetPercents;
+    private final Map<String, Percent> stockTargetPercent;
 
     public Account(String investor, Money capital) {
         this.investor = investor;
         this.capital = capital;
         this.holdings = new HashMap<>();
-        this.targetPercents = new HashMap<>();
+        this.stockTargetPercent = new HashMap<>();
     }
 
-    void add(Holding holding) {
+    void addHolding(Holding holding) {
         if (this.holdings.containsKey(holding.stock())) {
             this.holdings.put(holding.stock(), this.holdings.get(holding.stock()).merge(holding));
         }
@@ -29,26 +29,24 @@ public class Account {
         }
     }
 
-    void add(String stock, Percent targetPercent) {
-        this.targetPercents.put(stock, targetPercent);
+    void addStockTargetPercent(String stock, Percent targetPercent) {
+        this.stockTargetPercent.put(stock, targetPercent);
     }
 
-    Integer maxShare(String stock, Money price) {
-        return stockHoldingCap(stock).getAmount().divide(price.getAmount()).intValue();
+    Integer stockHoldingQuantityCap(String stock, Money price) {
+        return stockHoldingMoneyCap(stock).getAmount().divide(price.getAmount()).intValue();
     }
 
-    Integer currentShare(String stock) {
-        // TODO BL - assuming that we have only one stock in place in holdings
-        return holdings.values().stream().filter(h -> h.stock().equals(stock)).mapToInt(h -> h.quantity()).sum();
+    Integer stockHoldingQuantity(String stock) {
+        return holdings.get(stock).quantity();
     }
 
-    Integer availableShare(String stock, Money price) {
-        return maxShare(stock, price) - currentShare(stock);
+    Integer quantityCanBeAdded(String stock, Money price) {
+        return stockHoldingQuantityCap(stock, price) - stockHoldingQuantity(stock);
     }
 
-    // maximumHoldingValue
-    Money stockHoldingCap(String stock) {
-        return targetPercents.get(stock).of(capital);
+    Money stockHoldingMoneyCap(String stock) {
+        return stockTargetPercent.get(stock).of(capital);
     }
 
     String investor() {

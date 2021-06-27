@@ -29,30 +29,30 @@ public class Portfolio {
     }
 
     Integer entitledToBuyUpTo(String stock, Money price) {
-        return accounts.values().stream().mapToInt(a -> a.availableShare(stock, price)).sum();
+        return accounts.values().stream().mapToInt(a -> a.quantityCanBeAdded(stock, price)).sum();
     }
 
     Integer entitledToSellUpTo(String stock) {
-        return accounts.values().stream().mapToInt(a -> a.currentShare(stock)).sum();
+        return accounts.values().stream().mapToInt(a -> a.stockHoldingQuantity(stock)).sum();
     }
 
     Double suggestedFinalPosition(Account account, String stock) {
-        Money accountStockHoldingCap = account.stockHoldingCap(stock);
+        Money accountStockHoldingCap = account.stockHoldingMoneyCap(stock);
         Money portfolioStockHoldingCap = stockHoldingCap(stock);
-        Integer allShare = allShareInPosition(stock, trades.get(stock).singedQuantity());
-        return accountStockHoldingCap.times(allShare).divide(portfolioStockHoldingCap).getAmount().doubleValue();
+        Integer quantityToBeReAllocated = quantity(stock) + trades.get(stock).singedQuantity();
+        return accountStockHoldingCap.times(quantityToBeReAllocated).divide(portfolioStockHoldingCap).getAmount().doubleValue();
     }
 
     Double suggestedAdditionalPosition(Account account, String stock) {
-        return BigDecimal.valueOf(suggestedFinalPosition(account, stock)).add(BigDecimal.valueOf(account.currentShare(stock)).setScale(2).negate()).doubleValue();
+        return BigDecimal.valueOf(suggestedFinalPosition(account, stock)).add(BigDecimal.valueOf(account.stockHoldingQuantity(stock)).setScale(2).negate()).doubleValue();
     }
 
     private Money stockHoldingCap(String stock) {
-        return Money.dollars(accounts.values().stream().mapToDouble(a -> a.stockHoldingCap(stock).getAmount().doubleValue()).sum());
+        return Money.dollars(accounts.values().stream().mapToDouble(a -> a.stockHoldingMoneyCap(stock).getAmount().doubleValue()).sum());
     }
 
-    private Integer allShareInPosition(String stock, Integer newShare) {
-        return accounts.values().stream().mapToInt(a -> a.currentShare(stock)).sum() + newShare;
+    private Integer quantity(String stock) {
+        return accounts.values().stream().mapToInt(a -> a.stockHoldingQuantity(stock)).sum();
     }
 
     void reallocateHoldings(String stock) {
@@ -63,11 +63,11 @@ public class Portfolio {
             Account a = accounts.get(additionalPositions.get(i).getValue0());
             if (i < additionalPositions.size() - 1) {
                 Integer additionalShare = additionalPositions.get(i).getValue1();
-                a.add(new Holding(stock, additionalShare));
+                a.addHolding(new Holding(stock, additionalShare));
                 remainingShare -= additionalShare;
             }
             else {
-                a.add(new Holding(stock, remainingShare));
+                a.addHolding(new Holding(stock, remainingShare));
             }
         }
     }
