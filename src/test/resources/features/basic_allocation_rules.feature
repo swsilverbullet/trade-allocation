@@ -1,11 +1,11 @@
-Feature: Basic Allocation Rules
+Feature: Basic stock allocation rules
 
   Scenario Outline: What is "Target Max Value" & "Target Maximum Share"
     Given an investor <Investor> has an account with <Capital> capital
-    And an investor <Investor> sets a <Stock Symbol> Stock with target percent <Target Percent>
-    When current price of <Stock Symbol> Stock is <Current Price>
-    Then an investor <Investor> has an account with <Target Market Value> for <Stock Symbol> Stock
-    And an investor <Investor> can maintain a <Stock Symbol> Stock up to <Target Max Share> share
+    And an investor <Investor> sets a <Stock Symbol> stock with target percent <Target Percent>
+    When current price of <Stock Symbol> stock is <Current Price>
+    Then an investor <Investor> has an account with <Target Market Value> for <Stock Symbol> stock
+    And an investor <Investor> can maintain a <Stock Symbol> stock up to <Target Max Share> share
 
     Examples:
       | Investor | Capital  | Stock Symbol | Current Price | Target Percent | Target Market Value | Target Max Share |
@@ -16,9 +16,9 @@ Feature: Basic Allocation Rules
 
   Scenario Outline: Calculating allowed share when the account already holds some
     Given an investor <Investor> has an account with <Capital> capital
-    When an investor <Investor> has <Owned Quantity> shares of <Stock Symbol> Stock with current price <Current Price> in the account
-    And an investor <Investor> sets <Target Percent> target percent of <Stock Symbol> Stock
-    Then an investor <Investor> can own <Extra Quantity> more shares of <Stock Symbol> Stock
+    When an investor <Investor> has <Owned Quantity> shares of <Stock Symbol> stock with current price <Current Price> in the account
+    And an investor <Investor> sets <Target Percent> target percent of <Stock Symbol> stock
+    Then an investor <Investor> can own <Extra Quantity> more shares of <Stock Symbol> stock
 
     Examples:
       | Investor | Capital  | Stock Symbol | Current Price | Target Percent | Owned Quantity | Extra Quantity |
