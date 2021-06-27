@@ -12,22 +12,27 @@ public class Account {
     private final String investor;
     private final Money capital;
 
-    private final List<Holding> holdings;
+    private final Map<String, Holding> holdings;
     private final Map<String, Percent> targetPercents;
 
     public Account(String investor, Money capital) {
         this.investor = investor;
         this.capital = capital;
-        this.holdings = new ArrayList<>();
+        this.holdings = new HashMap<>();
         this.targetPercents = new HashMap<>();
     }
 
     public void add(Holding holding) {
-        this.holdings.add(holding);
+        if (this.holdings.containsKey(holding.stock())) {
+            this.holdings.put(holding.stock(), this.holdings.get(holding.stock()).merge(holding));
+        }
+        else {
+            this.holdings.put(holding.stock(), holding);
+        }
     }
 
-    public void add(String stockSymbol, Percent targetPercent) {
-        this.targetPercents.put(stockSymbol, targetPercent);
+    public void add(String stock, Percent targetPercent) {
+        this.targetPercents.put(stock, targetPercent);
     }
 
     public Integer maxShare(String stock, Money price) {
@@ -36,7 +41,7 @@ public class Account {
 
     public Integer currentShare(String stock) {
         // TODO BL - assuming that we have only one stock in place in holdings
-        return holdings.stream().filter(h -> h.stockSymbol().equals(stock)).mapToInt(h -> h.quantity()).sum();
+        return holdings.values().stream().filter(h -> h.stock().equals(stock)).mapToInt(h -> h.quantity()).sum();
     }
 
     public Integer availableShare(String stock, Money price) {

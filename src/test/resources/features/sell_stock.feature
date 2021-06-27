@@ -10,3 +10,10 @@ Feature: Sell & de-allocate the stocks from accounts
 
   Scenario: Maximum share for portfolio manager can sell
     Then a portfolio manager is entitled to sell up to 75 share of APPLE stock
+
+  Scenario: Deallocating the shares from investor's account
+    When a portfolio manager sell 20 share of APPLE stock
+    And a portfolio manager deallocates 5 shares of APPLE stock from John's account
+    And a portfolio manager deallocates 15 shares of APPLE stock from Sarah's account
+    Then an investor John has 20 shares of GOOGLE stock
+    And an investor Sarah has 35 shares of GOOGLE stock

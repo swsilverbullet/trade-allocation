@@ -26,6 +26,10 @@ public class Portfolio {
         this.buyTrades.put(stock, quantity);
     }
 
+    public void addSellTrade(String stock, Integer quantity) {
+        this.sellTrades.put(stock, quantity);
+    }
+
     public Integer entitledToBuyUpTo(String stock, Money price) {
         return accounts.values().stream().mapToInt(a -> a.availableShare(stock, price)).sum();
     }

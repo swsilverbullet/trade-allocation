@@ -4,6 +4,7 @@ import com.highbridge.trade_allocation.domain.*;
 import com.highbridge.trade_allocation.domain.generic.Money;
 import com.highbridge.trade_allocation.domain.generic.Percent;
 import io.cucumber.java.Before;
+import io.cucumber.java.en.When;
 import io.cucumber.java8.En;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -39,10 +40,20 @@ public class StepDefinitions implements En {
             portfolio.addBuyTrade(stock, quantity);
             assertThat(portfolio.entitledToBuyUpTo(stock, stockExchange.price(stock)) >= quantity, is(true));
         });
+        When("^a portfolio manager sell (.*) share of (.*) stock$", (Integer quantity, String stock) -> {
+            accountRepository.all().forEach(a -> portfolio.add(a));
+            portfolio.addSellTrade(stock, quantity);
+            assertThat(portfolio.entitledToSellUpTo(stock) >= quantity, is(true));
+        });
         When("^a portfolio manager allocates (.*) shares of (.*) stock to (.*)'s account$", (Integer quantity, String stock, String investor) -> {
             Account account = accountRepository.findByInvestor(investor);
             account.add(new Holding(stock, quantity));
         });
+        When("^a portfolio manager deallocates (.*) shares of (.*) stock from (.*)'s account$", (Integer quantity, String stock, String investor) -> {
+            Account account = accountRepository.findByInvestor(investor);
+            account.add(new Holding(stock, -quantity));
+        });
+
         When("^a portfolio manager allocates the new (.*) stock$", (String stock) -> {
             portfolio.allocateNew(stock);
         });

@@ -16,7 +16,7 @@ public class StockExchange {
         this.prices.put(stock, price);
     }
 
-    public Money price(String stockSymbol) {
-        return prices.get(stockSymbol);
+    public Money price(String stock) {
+        return prices.get(stock);
     }
 }
