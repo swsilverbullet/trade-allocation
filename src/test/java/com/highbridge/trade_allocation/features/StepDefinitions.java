@@ -12,7 +12,7 @@ import static org.hamcrest.Matchers.is;
 public class StepDefinitions implements En {
     Portfolio portfolio;
     AccountRepository accountRepository;
-    StockExchangeRepository exchangeRepository;
+    StockExchange stockExchange;
 
     public StepDefinitions() {
         Given("^an investor (.*) has an account with (.*) capital$", (String investor, String capital) -> {
@@ -23,7 +23,7 @@ public class StepDefinitions implements En {
         });
 
         When("^current price of (.*) stock is (.*)$", (String stock, String currentPrice) -> {
-            exchangeRepository.add(stock, toMoney(currentPrice));
+            stockExchange.add(stock, toMoney(currentPrice));
         });
         When("^an investor (.*) has (.*) shares of (.*) stock with current price (.*) in the account$", (String investor, Integer ownedQuantity, String stock, String currentPrice) -> {
             Account account = accountRepository.findByInvestor(investor);
@@ -36,8 +36,8 @@ public class StepDefinitions implements En {
         When("^a portfolio manager buy (.*) share of (.*) stock$", (Integer quantity, String stock) -> {
             // TODO BL - let's improve this logic. now it simply checks the number of max share portfolio manager can buy
             accountRepository.all().forEach(a -> portfolio.add(a));
-            portfolio.addNewTrade(stock, quantity);
-            assertThat(portfolio.entitledToBuyUpTo(stock, exchangeRepository.price(stock)) >= quantity, is(true));
+            portfolio.addBuyTrade(stock, quantity);
+            assertThat(portfolio.entitledToBuyUpTo(stock, stockExchange.price(stock)) >= quantity, is(true));
         });
         When("^a portfolio manager allocates (.*) shares of (.*) stock to (.*)'s account$", (Integer quantity, String stock, String investor) -> {
             Account account = accountRepository.findByInvestor(investor);
@@ -52,14 +52,14 @@ public class StepDefinitions implements En {
             assertThat(account.marketValue(stock), is(toMoney(marketValue)));
         });
         Then("^an investor (.*) can maintain a (.*) stock up to (.*) share$", (String investor, String stock, Integer maxShare) -> {
-            Money price = exchangeRepository.price(stock);
+            Money price = stockExchange.price(stock);
             assertThat(accountRepository.findByInvestor(investor).maxShare(stock, price), is(maxShare));
         });
         Then("^an investor (.*) can own (.*) more shares of (.*) stock$", (String investor, Integer extraShare, String stock) -> {
         });
         Then("^a portfolio manager is entitled to buy up to (.*) share of (.*) stock$", (Integer maxShareToBuy, String stock) -> {
             accountRepository.all().forEach(a -> portfolio.add(a));
-            assertThat(portfolio.entitledToBuyUpTo(stock, exchangeRepository.price(stock)), is(maxShareToBuy));
+            assertThat(portfolio.entitledToBuyUpTo(stock, stockExchange.price(stock)), is(maxShareToBuy));
         });
         Then("^a portfolio manager is entitled to sell up to (.*) share of (.*) stock$", (Integer maxShareToSell, String stock) -> {
             accountRepository.all().forEach(a -> portfolio.add(a));
@@ -93,13 +93,13 @@ public class StepDefinitions implements En {
     public void before() {
         this.portfolio = new Portfolio();
         this.accountRepository = new AccountRepository();
-        this.exchangeRepository = new StockExchangeRepository();
+        this.stockExchange = new StockExchange();
 
         initExchangeRepository();
     }
 
     private void initExchangeRepository() {
-        exchangeRepository.add("GOOGLE", Money.dollars(20));
-        exchangeRepository.add("APPLE", Money.dollars(10));
+        this.stockExchange.add("GOOGLE", Money.dollars(20));
+        this.stockExchange.add("APPLE", Money.dollars(10));
     }
 }

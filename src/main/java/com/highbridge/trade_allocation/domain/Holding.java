@@ -1,7 +1,5 @@
 package com.highbridge.trade_allocation.domain;
 
-import com.highbridge.trade_allocation.domain.generic.Money;
-
 public class Holding {
     private final String stockSymbol;
     private final Integer quantity;
