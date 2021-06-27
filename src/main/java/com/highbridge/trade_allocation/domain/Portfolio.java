@@ -58,11 +58,11 @@ public class Portfolio {
             Account a = accounts.get(additionalPositions.get(i).getValue0());
             if (i < additionalPositions.size() - 1) {
                 Integer additionalShare = additionalPositions.get(i).getValue1();
-                a.add(new Holding(stock, Money.dollars(20), additionalShare));
+                a.add(new Holding(stock, additionalShare));
                 remainingShare -= additionalShare;
             }
             else {
-                a.add(new Holding(stock, Money.dollars(20), remainingShare));
+                a.add(new Holding(stock, remainingShare));
             }
         }
     }

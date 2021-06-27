@@ -27,7 +27,7 @@ public class StepDefinitions implements En {
         });
         When("^an investor (.*) has (.*) shares of (.*) stock with current price (.*) in the account$", (String investor, Integer ownedQuantity, String stock, String currentPrice) -> {
             Account account = accountRepository.findByInvestor(investor);
-            account.add(new Holding(stock, toMoney(currentPrice), ownedQuantity));
+            account.add(new Holding(stock, ownedQuantity));
         });
         When("^an investor (.*) sets (.*) target percent of (.*) stock$", (String investor, String targetPercent, String stock) -> {
             Account account = accountRepository.findByInvestor(investor);
@@ -39,10 +39,9 @@ public class StepDefinitions implements En {
             portfolio.addNewTrade(stock, quantity);
             assertThat(portfolio.entitledToBuyUpTo(stock, exchangeRepository.price(stock)) >= quantity, is(true));
         });
-
         When("^a portfolio manager allocates (.*) shares of (.*) stock to (.*)'s account$", (Integer quantity, String stock, String investor) -> {
             Account account = accountRepository.findByInvestor(investor);
-            account.add(new Holding(stock, exchangeRepository.price(stock), quantity));
+            account.add(new Holding(stock, quantity));
         });
         When("^a portfolio manager allocates the new (.*) stock$", (String stock) -> {
             portfolio.allocateNew(stock);
