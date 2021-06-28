@@ -20,7 +20,7 @@ public class AllocationRule {
         conditions.add(new GreaterThanHeldQuantityAndSellTrade());
     }
 
-    public Boolean isConditionMet(Trade trade) {
+    public Boolean isErrorConditionMet(Trade trade) {
         for (Account account : portfolio.accounts()) {
             for (FinalPositionErrorCondition condition : conditions) {
                 if (condition.isSatisfiedBy(portfolio.suggestedFinalPosition(account, trade), account, trade)) {

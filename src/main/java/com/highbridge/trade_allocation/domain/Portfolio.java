@@ -1,12 +1,14 @@
 package com.highbridge.trade_allocation.domain;
 
 import com.highbridge.trade_allocation.domain.generic.Money;
-import com.highbridge.trade_allocation.domain.rules.*;
+import com.highbridge.trade_allocation.domain.rules.AllocationRule;
 import org.javatuples.Pair;
 
 import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Portfolio {
     private final Map<String, Account> accounts;
@@ -53,23 +55,22 @@ public class Portfolio {
     }
 
     void reallocateHoldings(Trade newTrade) {
-        boolean isErrorConditionMet = rule.isConditionMet(newTrade);
-        List<Pair<Account, Long>> accountAndSuggestedQuantity = new AccountAndSuggestedTradeAllocation(this).ordered(newTrade);
+        if (this.rule.isErrorConditionMet(newTrade)) {
+            accounts().forEach(account -> account.setToZeroQuantity(newTrade.stock(), newTrade.price()));
+        }
+        else {
+            List<Pair<Account, Long>> accountAndSuggestedQuantity = new AccountAndSuggestedTradeAllocation(this).ordered(newTrade);
 
-        Long remainingShare = newTrade.singedQuantity();
-        for (int i = 0; i < accountAndSuggestedQuantity.size(); i++) {
-            Account account = accountAndSuggestedQuantity.get(i).getValue0();
-            if (isErrorConditionMet) {
-                account.setToZeroQuantity(newTrade.stock(), newTrade.price());
-            }
-            else {
+            Long remainingQuantity = newTrade.singedQuantity();
+            for (int i = 0; i < accountAndSuggestedQuantity.size(); i++) {
+                Account account = accountAndSuggestedQuantity.get(i).getValue0();
                 if (i < accountAndSuggestedQuantity.size() - 1) {
-                    Long additionalShare = accountAndSuggestedQuantity.get(i).getValue1();
-                    account.addHolding(new Holding(newTrade.stock(), newTrade.price(), additionalShare));
-                    remainingShare -= additionalShare;
+                    Long suggestedQuantity = accountAndSuggestedQuantity.get(i).getValue1();
+                    account.addHolding(new Holding(newTrade.stock(), newTrade.price(), suggestedQuantity));
+                    remainingQuantity -= suggestedQuantity;
                 }
-                else {
-                    account.addHolding(new Holding(newTrade.stock(), newTrade.price(), remainingShare));
+                else {  // set the remainder for last account
+                    account.addHolding(new Holding(newTrade.stock(), newTrade.price(), remainingQuantity));
                 }
             }
         }
