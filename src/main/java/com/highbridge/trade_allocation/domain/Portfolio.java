@@ -58,7 +58,8 @@ public class Portfolio {
             Account account = additionalPositions.get(i).getValue0();
             if (isErrorOccured ||
                     this.suggestedFinalPosition(account, newTrade) < 0 ||
-                    this.suggestedFinalPosition(account, newTrade) > account.targetMarketQuantity(newTrade.stock(), newTrade.price())) {
+                    this.suggestedFinalPosition(account, newTrade) > account.targetMarketQuantity(newTrade.stock(), newTrade.price()) ||
+                    (this.suggestedFinalPosition(account, newTrade) < account.currentQuantity(newTrade.stock()) && newTrade.isBuy())) {
                 account.setToZeroQuantity(newTrade.stock(), newTrade.price());
                 isErrorOccured = true;
             }
