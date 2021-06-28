@@ -39,3 +39,13 @@ Feature: Error conditions
     And an investor Sarah has 0 quantity of APPLE stock
     Then an investor John has 41 quantity of GOOGLE stock
     And an investor Sarah has 59 quantity of GOOGLE stock
+
+  Scenario: 7. ERROR Condition: SUGGESTED_FINAL_POSITION (10) > Current Held Quantity (25-20=5) when trade is a SELL
+    Given an investor John has -20 quantity of APPLE stock with current price $10 in the account
+    When a portfolio manager sell 5 quantity of APPLE stock
+    And a portfolio manager suggests total 10 quantity of APPLE stock in John's account
+    And a portfolio manager reallocates the new APPLE stock
+    Then an investor John has 0 quantity of APPLE stock
+#    And an investor Sarah has 0 quantity of APPLE stock
+    Then an investor John has 41 quantity of GOOGLE stock
+    And an investor Sarah has 59 quantity of GOOGLE stock

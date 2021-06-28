@@ -41,6 +41,10 @@ public class Trade {
         return buyOrSell == Buy;
     }
 
+    Boolean isSell() {
+        return !isBuy();
+    }
+
     enum BuyOrSell {
         Buy, Sell
     }
