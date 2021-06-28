@@ -20,12 +20,8 @@ public class Portfolio {
         this.accounts.put(account.investor(), account);
     }
 
-    void addBuyTrade(String stock, Integer quantity) {
-        this.newTrades.put(stock, Trade.buy(stock, quantity, Money.dollars(0)));
-    }
-
-    void addSellTrade(String stock, Integer quantity) {
-        this.newTrades.put(stock, Trade.sell(stock, quantity, Money.dollars(0)));
+    void addTrade(Trade trade) {
+        this.newTrades.put(trade.stock(),trade);
     }
 
     Integer entitledToBuyUpTo(String stock, Money price) {
@@ -61,16 +57,17 @@ public class Portfolio {
     void reallocateHoldings(String stock) {
         List<Pair<String, Integer>> additionalPositions = orderedAdditionalPositions(stock);
 
-        Integer remainingShare = newTrades.get(stock).singedQuantity();
+        Trade newTrade = newTrades.get(stock);
+        Integer remainingShare = newTrade.singedQuantity();
         for (int i = 0; i < additionalPositions.size(); i++) {
             Account a = accounts.get(additionalPositions.get(i).getValue0());
             if (i < additionalPositions.size() - 1) {
                 Integer additionalShare = additionalPositions.get(i).getValue1();
-                a.addHolding(new Holding(stock, additionalShare));
+                a.addHolding(new Holding(stock, newTrade.price(), additionalShare));
                 remainingShare -= additionalShare;
             }
             else {
-                a.addHolding(new Holding(stock, remainingShare));
+                a.addHolding(new Holding(stock, newTrade.price(), remainingShare));
             }
         }
     }

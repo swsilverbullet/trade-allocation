@@ -26,7 +26,7 @@ public class StepDefinitions implements En {
         });
         When("^an investor (.*) has (.*) quantity of (.*) stock with current price (.*) in the account$", (String investor, Integer ownedQuantity, String stock, String currentPrice) -> {
             Account account = accountRepository.findByInvestor(investor);
-            account.addHolding(new Holding(stock, ownedQuantity));
+            account.addHolding(new Holding(stock, toMoney(currentPrice), ownedQuantity));
         });
         When("^an investor (.*) sets (.*) target percent of (.*) stock$", (String investor, String targetPercent, String stock) -> {
             Account account = accountRepository.findByInvestor(investor);
@@ -35,21 +35,21 @@ public class StepDefinitions implements En {
         When("^a portfolio manager buy (.*) quantity of (.*) stock$", (Integer quantity, String stock) -> {
             // TODO BL - let's improve this logic. now it simply checks the number of max quantity portfolio manager can buy
             accountRepository.all().forEach(a -> portfolio.add(a));
-            portfolio.addBuyTrade(stock, quantity);
+            portfolio.addTrade(Trade.buy(stock, quantity, stockExchange.price(stock)));
             assertThat(portfolio.entitledToBuyUpTo(stock, stockExchange.price(stock)) >= quantity, is(true));
         });
         When("^a portfolio manager sell (.*) quantity of (.*) stock$", (Integer quantity, String stock) -> {
             accountRepository.all().forEach(a -> portfolio.add(a));
-            portfolio.addSellTrade(stock, quantity);
+            portfolio.addTrade(Trade.sell(stock, quantity, stockExchange.price(stock)));
             assertThat(portfolio.entitledToSellUpTo(stock) >= quantity, is(true));
         });
         When("^a portfolio manager allocates (.*) quantity of (.*) stock to (.*)'s account$", (Integer quantity, String stock, String investor) -> {
             Account account = accountRepository.findByInvestor(investor);
-            account.addHolding(new Holding(stock, quantity));
+            account.addHolding(new Holding(stock, stockExchange.price(stock), quantity));
         });
         When("^a portfolio manager deallocates (.*) quantity of (.*) stock from (.*)'s account$", (Integer quantity, String stock, String investor) -> {
             Account account = accountRepository.findByInvestor(investor);
-            account.addHolding(new Holding(stock, -quantity));
+            account.addHolding(new Holding(stock, stockExchange.price(stock), -quantity));
         });
         When("^a portfolio manager reallocates the (?:new|sold) (.*) stock$", (String stock) -> {
             portfolio.reallocateHoldings(stock);

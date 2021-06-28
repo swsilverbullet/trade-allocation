@@ -2,6 +2,8 @@ package com.highbridge.trade_allocation.domain;
 
 import com.highbridge.trade_allocation.domain.generic.Money;
 
+import static com.highbridge.trade_allocation.domain.Trade.BuyOrSell.*;
+
 public class Trade {
     private final String stock;
     private final Integer quantity;
@@ -16,15 +18,23 @@ public class Trade {
     }
 
     static Trade buy(String stock, Integer quantity, Money price) {
-        return new Trade(stock, quantity, price, BuyOrSell.Buy);
+        return new Trade(stock, quantity, price, Buy);
     }
 
     static Trade sell(String stock, Integer quantity, Money price) {
-        return new Trade(stock, quantity, price, BuyOrSell.Sell);
+        return new Trade(stock, quantity, price, Sell);
+    }
+
+    String stock() {
+        return stock;
     }
 
     Integer singedQuantity() {
-        return this.buyOrSell == BuyOrSell.Buy ? quantity : -quantity;
+        return this.buyOrSell == Buy ? quantity : -quantity;
+    }
+
+    Money price() {
+        return price;
     }
 
     enum BuyOrSell {
