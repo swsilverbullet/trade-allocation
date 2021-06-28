@@ -28,8 +28,12 @@ public class Holding {
 
     Holding merge(Holding other) {
         if (this.stock.equals(other.stock) && this.price.equals(other.price)) {
-            return new Holding(this.stock, this.price, this.quantity + other.quantity);
+            return withQuantity(this.quantity + other.quantity);
         }
         throw new IllegalStateException("different stock or price - cannot merge the holding");
+    }
+
+    Holding withQuantity(Long quantity) {
+        return new Holding(this.stock, this.price, quantity);
     }
 }

@@ -29,6 +29,15 @@ public class Account {
         }
     }
 
+    void setToZeroQuantity(String stock, Money price) {
+        if (this.holdings.containsKey(stock)) {
+            this.holdings.put(stock, this.holdings.get(stock).withQuantity(0L));
+        }
+        else {
+            this.holdings.put(stock, new Holding(stock, price, 0L));
+        }
+    }
+
     void addStockTargetPercent(String stock, Percent targetPercent) {
         this.stockTargetPercent.put(stock, targetPercent);
     }

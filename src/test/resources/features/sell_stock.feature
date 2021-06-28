@@ -18,7 +18,6 @@ Feature: Sell & de-allocate the stocks from accounts
     Then an investor John has 20 quantity of APPLE stock
     And an investor Sarah has 35 quantity of APPLE stock
 
-  # TODO BL - double check the value below
   Scenario: Suggesting final position for given stock
     When a portfolio manager sell 20 quantity of APPLE stock
     Then a portfolio manager suggests total 11.0 quantity of APPLE stock in John's account

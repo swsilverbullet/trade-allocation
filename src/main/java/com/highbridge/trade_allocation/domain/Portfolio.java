@@ -50,28 +50,33 @@ public class Portfolio {
     }
 
     void reallocateHoldings(Trade newTrade) {
-        List<Pair<String, Long>> additionalPositions = orderedAdditionalPositions(newTrade);
+        List<Pair<Account, Long>> additionalPositions = orderedAdditionalPositions(newTrade);
 
         Long remainingShare = newTrade.singedQuantity();
         for (int i = 0; i < additionalPositions.size(); i++) {
-            Account a = accounts.get(additionalPositions.get(i).getValue0());
-            if (i < additionalPositions.size() - 1) {
-                Long additionalShare = additionalPositions.get(i).getValue1();
-                a.addHolding(new Holding(newTrade.stock(), newTrade.price(), additionalShare));
-                remainingShare -= additionalShare;
+            Account account = additionalPositions.get(i).getValue0();
+            if (this.suggestedFinalPosition(account, newTrade) >= 0) {
+                if (i < additionalPositions.size() - 1) {
+                    Long additionalShare = additionalPositions.get(i).getValue1();
+                    account.addHolding(new Holding(newTrade.stock(), newTrade.price(), additionalShare));
+                    remainingShare -= additionalShare;
+                }
+                else {
+                    account.addHolding(new Holding(newTrade.stock(), newTrade.price(), remainingShare));
+                }
             }
             else {
-                a.addHolding(new Holding(newTrade.stock(), newTrade.price(), remainingShare));
+                account.setToZeroQuantity(newTrade.stock(), newTrade.price());
             }
         }
     }
 
-    private List<Pair<String, Long>> orderedAdditionalPositions(Trade trade) {
+    private List<Pair<Account, Long>> orderedAdditionalPositions(Trade trade) {
         List<Account> ordered = new ArrayList<>(accounts.values());
         Collections.sort(ordered, new AllocationAscendingComparator(this, trade));
 
         return ordered.stream()
-                .map(a -> new Pair<>(a.investor(), Math.round(this.suggestedTradeAllocation(a, trade))))
+                .map(a -> new Pair<>(a, Math.round(this.suggestedTradeAllocation(a, trade))))
                 .collect(Collectors.toList());
     }
 }
