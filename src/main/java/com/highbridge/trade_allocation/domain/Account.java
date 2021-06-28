@@ -37,15 +37,15 @@ public class Account {
         return stockTargetPercent.get(stock).of(capital);
     }
 
-    Integer targetMarketQuantity(String stock, Money price) {
-        return targetMarketValue(stock).divide(price).getAmount().intValue();
+    Long targetMarketQuantity(String stock, Money price) {
+        return targetMarketValue(stock).divide(price).getAmount().longValue();
     }
 
-    Integer currentQuantity(String stock) {
+    Long currentQuantity(String stock) {
         return holdings.get(stock).quantity();
     }
 
-    Integer quantityCanBeAdded(String stock, Money price) {
+    Long quantityCanBeAdded(String stock, Money price) {
         return targetMarketQuantity(stock, price) - currentQuantity(stock);
     }
 

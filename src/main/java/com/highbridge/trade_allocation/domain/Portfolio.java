@@ -9,94 +9,84 @@ import java.util.stream.Collectors;
 
 public class Portfolio {
     private final Map<String, Account> accounts;
-    private final Map<String, Trade> newTrades;
 
     public Portfolio() {
         this.accounts = new HashMap<>();
-        this.newTrades = new HashMap<>();
     }
 
     void add(Account account) {
         this.accounts.put(account.investor(), account);
     }
 
-    void addTrade(Trade trade) {
-        this.newTrades.put(trade.stock(),trade);
+    Long entitledToBuyUpTo(String stock, Money price) {
+        return accounts.values().stream().mapToLong(a -> a.quantityCanBeAdded(stock, price)).sum();
     }
 
-    Integer entitledToBuyUpTo(String stock, Money price) {
-        return accounts.values().stream().mapToInt(a -> a.quantityCanBeAdded(stock, price)).sum();
+    Long entitledToSellUpTo(String stock) {
+        return accounts.values().stream().mapToLong(a -> a.currentQuantity(stock)).sum();
     }
 
-    Integer entitledToSellUpTo(String stock) {
-        return accounts.values().stream().mapToInt(a -> a.currentQuantity(stock)).sum();
+    Double suggestedFinalPosition(Account account, Trade newTrade) {
+        Money accountTargetMarketValue = account.targetMarketValue(newTrade.stock());
+        Money portfolioTotalTargetMarketValue = totalTargetMarketValue(newTrade.stock());
+        return accountTargetMarketValue.times(allInPosition(newTrade)).divide(portfolioTotalTargetMarketValue).getAmount().doubleValue();
     }
 
-    Double suggestedFinalPosition(Account account, String stock) {
-        Money accountTargetMarketValue = account.targetMarketValue(stock);
-        Money portfolioTotalTargetMarketValue = totalTargetMarketValue(stock);
-        return accountTargetMarketValue.times(allInPosition(stock)).divide(portfolioTotalTargetMarketValue).getAmount().doubleValue();
+    Long allInPosition(Trade newTrade) {
+        return totalQuantity(newTrade.stock()) + newTrade.singedQuantity();
     }
 
-    Integer allInPosition(String stock) {
-        return totalQuantity(stock) + newTrades.get(stock).singedQuantity();
-    }
-
-    Double suggestedTradeAllocation(Account account, String stock) {
-        return BigDecimal.valueOf(suggestedFinalPosition(account, stock)).add(BigDecimal.valueOf(account.currentQuantity(stock)).setScale(2).negate()).doubleValue();
+    Double suggestedTradeAllocation(Account account, Trade newTrade) {
+        Double suggestedFinalPosition = suggestedFinalPosition(account, newTrade);
+        return BigDecimal.valueOf(suggestedFinalPosition).add(BigDecimal.valueOf(account.currentQuantity(newTrade.stock())).setScale(2).negate()).doubleValue();
     }
 
     private Money totalTargetMarketValue(String stock) {
         return Money.dollars(accounts.values().stream().mapToDouble(a -> a.targetMarketValue(stock).getAmount().doubleValue()).sum());
     }
 
-    private Integer totalQuantity(String stock) {
-        return accounts.values().stream().mapToInt(a -> a.currentQuantity(stock)).sum();
+    private Long totalQuantity(String stock) {
+        return accounts.values().stream().mapToLong(a -> a.currentQuantity(stock)).sum();
     }
 
-    void reallocateHoldings(String stock) {
-        List<Pair<String, Integer>> additionalPositions = orderedAdditionalPositions(stock);
+    void reallocateHoldings(Trade newTrade) {
+        List<Pair<String, Long>> additionalPositions = orderedAdditionalPositions(newTrade);
 
-        Trade newTrade = newTrades.get(stock);
-        Integer remainingShare = newTrade.singedQuantity();
+        Long remainingShare = newTrade.singedQuantity();
         for (int i = 0; i < additionalPositions.size(); i++) {
             Account a = accounts.get(additionalPositions.get(i).getValue0());
             if (i < additionalPositions.size() - 1) {
-                Integer additionalShare = additionalPositions.get(i).getValue1();
-                a.addHolding(new Holding(stock, newTrade.price(), additionalShare));
+                Long additionalShare = additionalPositions.get(i).getValue1();
+                a.addHolding(new Holding(newTrade.stock(), newTrade.price(), additionalShare));
                 remainingShare -= additionalShare;
             }
             else {
-                a.addHolding(new Holding(stock, newTrade.price(), remainingShare));
+                a.addHolding(new Holding(newTrade.stock(), newTrade.price(), remainingShare));
             }
         }
     }
 
-    private List<Pair<String, Integer>> orderedAdditionalPositions(String stock) {
+    private List<Pair<String, Long>> orderedAdditionalPositions(Trade trade) {
         List<Account> ordered = new ArrayList<>(accounts.values());
-        Collections.sort(ordered, new AllocationAscendingComparator(this, stock));
+        Collections.sort(ordered, new AllocationAscendingComparator(this, trade));
 
         return ordered.stream()
-                .map(a -> new Pair<>(a.investor(), round(this.suggestedTradeAllocation(a, stock))))
+                .map(a -> new Pair<>(a.investor(), Math.round(this.suggestedTradeAllocation(a, trade))))
                 .collect(Collectors.toList());
     }
+}
 
-    private Integer round(Double d) {
-        return Long.valueOf(Math.round(d)).intValue(); //NOTE: practically speaking, int conversion is safe here
+class AllocationAscendingComparator implements Comparator<Account> {
+    private final Portfolio portfolio;
+    private final Trade trade;
+
+    public AllocationAscendingComparator(Portfolio portfolio, Trade trade) {
+        this.portfolio = portfolio;
+        this.trade = trade;
     }
 
-    class AllocationAscendingComparator implements Comparator<Account> {
-        private final Portfolio portfolio;
-        private final String stock;
-
-        public AllocationAscendingComparator(Portfolio portfolio, String stock) {
-            this.portfolio = portfolio;
-            this.stock = stock;
-        }
-
-        @Override
-        public int compare(Account a1, Account a2) {
-            return this.portfolio.suggestedTradeAllocation(a1, stock).compareTo(this.portfolio.suggestedTradeAllocation(a2, stock));
-        }
+    @Override
+    public int compare(Account a1, Account a2) {
+        return this.portfolio.suggestedTradeAllocation(a1, trade).compareTo(this.portfolio.suggestedTradeAllocation(a2, trade));
     }
 }

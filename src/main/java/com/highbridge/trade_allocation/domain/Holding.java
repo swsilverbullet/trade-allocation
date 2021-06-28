@@ -5,9 +5,9 @@ import com.highbridge.trade_allocation.domain.generic.Money;
 public class Holding {
     private final String stock;
     private final Money price;
-    private final Integer quantity;
+    private final Long quantity;
 
-    public Holding(String stock, Money price, Integer quantity) {
+    public Holding(String stock, Money price, Long quantity) {
         this.stock = stock;
         this.price = price;
         this.quantity = quantity;
@@ -17,7 +17,7 @@ public class Holding {
         return stock;
     }
 
-    Integer quantity() {
+    Long quantity() {
         return quantity;
     }
 
