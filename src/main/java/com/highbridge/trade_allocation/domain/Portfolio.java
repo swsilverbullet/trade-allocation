@@ -76,7 +76,6 @@ public class Portfolio {
         }
     }
 
-
     public List<Account> accounts() {
         return new ArrayList<>(this.accounts.values());
     }
