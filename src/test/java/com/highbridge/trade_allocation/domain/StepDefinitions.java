@@ -33,23 +33,22 @@ public class StepDefinitions implements En {
             Account account = accountRepository.findByInvestor(investor);
             account.addStockTargetPercent(stock, toPercent(targetPercent));
         });
-        When("^a portfolio manager buy (.*) quantity of (.*) stock$", (Long quantity, String stock) -> {
+        When("^a portfolio manager (buy|sell) (.*) quantity of (.*) stock$", (String buyOrSell, Long quantity, String stock) -> {
             accountRepository.all().forEach(a -> portfolio.add(a));
-            newTrade = Trade.buy(stock, quantity, stockExchange.price(stock));
-            assertThat(portfolio.entitledToBuyUpTo(newTrade.stock(), newTrade.price()) >= quantity, is(true));
+            if (buyOrSell.equals("buy")) {
+                newTrade = Trade.buy(stock, quantity, stockExchange.price(stock));
+                assertThat(portfolio.entitledToBuyUpTo(newTrade.stock(), newTrade.price()) >= quantity, is(true));
+            } else {
+                newTrade = Trade.sell(stock, quantity, stockExchange.price(stock));
+                assertThat(portfolio.entitledToSellUpTo(stock) >= quantity, is(true));
+            }
         });
-        When("^a portfolio manager sell (.*) quantity of (.*) stock$", (Long quantity, String stock) -> {
-            accountRepository.all().forEach(a -> portfolio.add(a));
-            newTrade = Trade.sell(stock, quantity, stockExchange.price(stock));
-            assertThat(portfolio.entitledToSellUpTo(stock) >= quantity, is(true));
-        });
-        When("^a portfolio manager allocates (.*) quantity of (.*) stock to (.*)'s account$", (Long quantity, String stock, String investor) -> {
+        When("^a portfolio manager (allocates|deallocates) (.*) quantity of (.*) stock (?:to|from) (.*)'s account$", (String allocation, Long quantity, String stock, String investor) -> {
             Account account = accountRepository.findByInvestor(investor);
+            if (allocation.equals("deallocates")) {
+                quantity = -quantity;
+            }
             account.addHolding(new Holding(stock, stockExchange.price(stock), quantity));
-        });
-        When("^a portfolio manager deallocates (.*) quantity of (.*) stock from (.*)'s account$", (Long quantity, String stock, String investor) -> {
-            Account account = accountRepository.findByInvestor(investor);
-            account.addHolding(new Holding(stock, stockExchange.price(stock), -quantity));
         });
         When("^a portfolio manager reallocates the (?:new|sold) (.*) stock$", (String stock) -> {
             assertThat(newTrade.stock(), is(stock));
@@ -65,29 +64,26 @@ public class StepDefinitions implements En {
         });
         Then("^an investor (.*) can own (.*) additional quantity of (.*) stock$", (String investor, Long additionalQuantity, String stock) -> {
         });
-        Then("^a portfolio manager is entitled to buy up to (.*) quantity of (.*) stock$", (Long maxQuantityToBuy, String stock) -> {
+        Then("^a portfolio manager is entitled to (buy|sell) up to (.*) quantity of (.*) stock$", (String buyOrSell, Long maxQuantity, String stock) -> {
             accountRepository.all().forEach(a -> portfolio.add(a));
-            assertThat(portfolio.entitledToBuyUpTo(stock, stockExchange.price(stock)), is(maxQuantityToBuy));
-        });
-        Then("^a portfolio manager is entitled to sell up to (.*) quantity of (.*) stock$", (Long maxQuantityToSell, String stock) -> {
-            accountRepository.all().forEach(a -> portfolio.add(a));
-            assertThat(portfolio.entitledToSellUpTo(stock), is(maxQuantityToSell));
+            if (buyOrSell.equals("buy")) {
+                assertThat(portfolio.entitledToBuyUpTo(stock, stockExchange.price(stock)), is(maxQuantity));
+            } else {
+                assertThat(portfolio.entitledToSellUpTo(stock), is(maxQuantity));
+            }
         });
         Then("^an investor (.*) has (.*) quantity of (.*) stock$", (String investor, Long quantity, String stock) -> {
             Account account = accountRepository.findByInvestor(investor);
             assertThat(account.currentQuantity(stock), is(quantity));
         });
-        Then("^a portfolio manager suggests total (.*) quantity of (.*) stock in (.*)'s account$", (Double totalQuantity, String stock, String investor) -> {
+        Then("^a portfolio manager suggests (total|additional) (.*) quantity of (.*) stock in (.*)'s account$", (String totalOrAdditional, Double quantity, String stock, String investor) -> {
             assertThat(newTrade.stock(), is(stock));
             Account account = accountRepository.findByInvestor(investor);
-            Double finalPosition = portfolio.suggestedFinalPosition(account, newTrade);
-            assertThat(finalPosition, is(totalQuantity));
-        });
-        Then("^a portfolio manager suggests additional (.*) quantity of (.*) stock in (.*)'s account$", (String additionalQuantity, String stock, String investor) -> {
-            assertThat(newTrade.stock(), is(stock));
-            Account account = accountRepository.findByInvestor(investor);
-            Double additionalPosition = portfolio.suggestedTradeAllocation(account, newTrade);
-            assertThat(additionalPosition, is(toMoney(additionalQuantity).getAmount().doubleValue()));
+            if (totalOrAdditional.equals("total")) {
+                assertThat(portfolio.suggestedFinalPosition(account, newTrade), is(quantity));
+            } else {
+                assertThat(portfolio.suggestedTradeAllocation(account, newTrade), is(quantity));
+            }
         });
     }
 
