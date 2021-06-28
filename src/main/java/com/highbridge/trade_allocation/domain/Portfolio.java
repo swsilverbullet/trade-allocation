@@ -9,11 +9,11 @@ import java.util.stream.Collectors;
 
 public class Portfolio {
     private final Map<String, Account> accounts;
-    private final Map<String, Trade> trades;
+    private final Map<String, Trade> newTrades;
 
     public Portfolio() {
         this.accounts = new HashMap<>();
-        this.trades = new HashMap<>();
+        this.newTrades = new HashMap<>();
     }
 
     void add(Account account) {
@@ -21,11 +21,11 @@ public class Portfolio {
     }
 
     void addBuyTrade(String stock, Integer quantity) {
-        this.trades.put(stock, Trade.buy(stock, quantity, Money.dollars(0)));
+        this.newTrades.put(stock, Trade.buy(stock, quantity, Money.dollars(0)));
     }
 
     void addSellTrade(String stock, Integer quantity) {
-        this.trades.put(stock, Trade.sell(stock, quantity, Money.dollars(0)));
+        this.newTrades.put(stock, Trade.sell(stock, quantity, Money.dollars(0)));
     }
 
     Integer entitledToBuyUpTo(String stock, Money price) {
@@ -33,32 +33,35 @@ public class Portfolio {
     }
 
     Integer entitledToSellUpTo(String stock) {
-        return accounts.values().stream().mapToInt(a -> a.stockHoldingQuantity(stock)).sum();
+        return accounts.values().stream().mapToInt(a -> a.quantity(stock)).sum();
     }
 
     Double suggestedFinalPosition(Account account, String stock) {
-        Money accountStockHoldingCap = account.stockHoldingMoneyCap(stock);
-        Money portfolioStockHoldingCap = stockHoldingCap(stock);
-        Integer quantityToBeReAllocated = quantity(stock) + trades.get(stock).singedQuantity();
-        return accountStockHoldingCap.times(quantityToBeReAllocated).divide(portfolioStockHoldingCap).getAmount().doubleValue();
+        Money accountTargetMarketValue = account.targetMarketValue(stock);
+        Money portfolioTotalTargetMarketValue = totalTargetMarketValue(stock);
+        return accountTargetMarketValue.times(allInPosition(stock)).divide(portfolioTotalTargetMarketValue).getAmount().doubleValue();
+    }
+
+    Integer allInPosition(String stock) {
+        return totalQuantity(stock) + newTrades.get(stock).singedQuantity();
     }
 
     Double suggestedAdditionalPosition(Account account, String stock) {
-        return BigDecimal.valueOf(suggestedFinalPosition(account, stock)).add(BigDecimal.valueOf(account.stockHoldingQuantity(stock)).setScale(2).negate()).doubleValue();
+        return BigDecimal.valueOf(suggestedFinalPosition(account, stock)).add(BigDecimal.valueOf(account.quantity(stock)).setScale(2).negate()).doubleValue();
     }
 
-    private Money stockHoldingCap(String stock) {
-        return Money.dollars(accounts.values().stream().mapToDouble(a -> a.stockHoldingMoneyCap(stock).getAmount().doubleValue()).sum());
+    private Money totalTargetMarketValue(String stock) {
+        return Money.dollars(accounts.values().stream().mapToDouble(a -> a.targetMarketValue(stock).getAmount().doubleValue()).sum());
     }
 
-    private Integer quantity(String stock) {
-        return accounts.values().stream().mapToInt(a -> a.stockHoldingQuantity(stock)).sum();
+    private Integer totalQuantity(String stock) {
+        return accounts.values().stream().mapToInt(a -> a.quantity(stock)).sum();
     }
 
     void reallocateHoldings(String stock) {
         List<Pair<String, Integer>> additionalPositions = orderedAdditionalPositions(stock);
 
-        Integer remainingShare = trades.get(stock).singedQuantity();
+        Integer remainingShare = newTrades.get(stock).singedQuantity();
         for (int i = 0; i < additionalPositions.size(); i++) {
             Account a = accounts.get(additionalPositions.get(i).getValue0());
             if (i < additionalPositions.size() - 1) {

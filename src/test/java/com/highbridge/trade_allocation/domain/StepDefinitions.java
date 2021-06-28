@@ -56,13 +56,13 @@ public class StepDefinitions implements En {
         });
         Then("^an investor (.*) has an account with (.*) for (.*) stock$", (String investor, String marketValue, String stock) -> {
             Account account = accountRepository.findByInvestor(investor);
-            assertThat(account.stockHoldingMoneyCap(stock), is(toMoney(marketValue)));
+            assertThat(account.targetMarketValue(stock), is(toMoney(marketValue)));
         });
         Then("^an investor (.*) can maintain a (.*) stock up to (.*)", (String investor, String stock, Integer maxQuantity) -> {
             Money price = stockExchange.price(stock);
-            assertThat(accountRepository.findByInvestor(investor).stockHoldingQuantityCap(stock, price), is(maxQuantity));
+            assertThat(accountRepository.findByInvestor(investor).targetQuantity(stock, price), is(maxQuantity));
         });
-        Then("^an investor (.*) can own (.*) more quantity of (.*) stock$", (String investor, Integer extraQuantity, String stock) -> {
+        Then("^an investor (.*) can own (.*) additional quantity of (.*) stock$", (String investor, Integer additionalQuantity, String stock) -> {
         });
         Then("^a portfolio manager is entitled to buy up to (.*) quantity of (.*) stock$", (Integer maxQuantityToBuy, String stock) -> {
             accountRepository.all().forEach(a -> portfolio.add(a));
@@ -74,7 +74,7 @@ public class StepDefinitions implements En {
         });
         Then("^an investor (.*) has (.*) quantity of (.*) stock$", (String investor, Integer quantity, String stock) -> {
             Account account = accountRepository.findByInvestor(investor);
-            assertThat(account.stockHoldingQuantity(stock), is(quantity));
+            assertThat(account.quantity(stock), is(quantity));
         });
         Then("^a portfolio manager suggests total (.*) quantity of (.*) stock in (.*)'s account$", (Double totalQuantity, String stock, String investor) -> {
             Account account = accountRepository.findByInvestor(investor);
