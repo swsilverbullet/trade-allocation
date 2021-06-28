@@ -29,7 +29,7 @@ public class Portfolio {
     }
 
     Integer entitledToSellUpTo(String stock) {
-        return accounts.values().stream().mapToInt(a -> a.quantity(stock)).sum();
+        return accounts.values().stream().mapToInt(a -> a.currentQuantity(stock)).sum();
     }
 
     Double suggestedFinalPosition(Account account, String stock) {
@@ -42,8 +42,8 @@ public class Portfolio {
         return totalQuantity(stock) + newTrades.get(stock).singedQuantity();
     }
 
-    Double suggestedAdditionalPosition(Account account, String stock) {
-        return BigDecimal.valueOf(suggestedFinalPosition(account, stock)).add(BigDecimal.valueOf(account.quantity(stock)).setScale(2).negate()).doubleValue();
+    Double suggestedTradeAllocation(Account account, String stock) {
+        return BigDecimal.valueOf(suggestedFinalPosition(account, stock)).add(BigDecimal.valueOf(account.currentQuantity(stock)).setScale(2).negate()).doubleValue();
     }
 
     private Money totalTargetMarketValue(String stock) {
@@ -51,7 +51,7 @@ public class Portfolio {
     }
 
     private Integer totalQuantity(String stock) {
-        return accounts.values().stream().mapToInt(a -> a.quantity(stock)).sum();
+        return accounts.values().stream().mapToInt(a -> a.currentQuantity(stock)).sum();
     }
 
     void reallocateHoldings(String stock) {
@@ -77,7 +77,7 @@ public class Portfolio {
         Collections.sort(ordered, new AllocationAscendingComparator(this, stock));
 
         return ordered.stream()
-                .map(a -> new Pair<>(a.investor(), round(this.suggestedAdditionalPosition(a, stock))))
+                .map(a -> new Pair<>(a.investor(), round(this.suggestedTradeAllocation(a, stock))))
                 .collect(Collectors.toList());
     }
 
@@ -96,7 +96,7 @@ public class Portfolio {
 
         @Override
         public int compare(Account a1, Account a2) {
-            return this.portfolio.suggestedAdditionalPosition(a1, stock).compareTo(this.portfolio.suggestedAdditionalPosition(a2, stock));
+            return this.portfolio.suggestedTradeAllocation(a1, stock).compareTo(this.portfolio.suggestedTradeAllocation(a2, stock));
         }
     }
 }

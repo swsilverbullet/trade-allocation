@@ -21,6 +21,7 @@ public class Holding {
         return quantity;
     }
 
+    // TODO BL - Not used anywhere. but keep this here followed by instruction
     Money marketValue() {
         return price.times(quantity);
     }

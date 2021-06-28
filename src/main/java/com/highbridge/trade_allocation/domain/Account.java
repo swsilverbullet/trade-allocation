@@ -33,20 +33,20 @@ public class Account {
         this.stockTargetPercent.put(stock, targetPercent);
     }
 
-    Integer targetQuantity(String stock, Money price) {
-        return targetMarketValue(stock).getAmount().divide(price.getAmount()).intValue();
+    Money targetMarketValue(String stock) {
+        return stockTargetPercent.get(stock).of(capital);
     }
 
-    Integer quantity(String stock) {
+    Integer targetMarketQuantity(String stock, Money price) {
+        return targetMarketValue(stock).divide(price).getAmount().intValue();
+    }
+
+    Integer currentQuantity(String stock) {
         return holdings.get(stock).quantity();
     }
 
     Integer quantityCanBeAdded(String stock, Money price) {
-        return targetQuantity(stock, price) - quantity(stock);
-    }
-
-    Money targetMarketValue(String stock) {
-        return stockTargetPercent.get(stock).of(capital);
+        return targetMarketQuantity(stock, price) - currentQuantity(stock);
     }
 
     String investor() {

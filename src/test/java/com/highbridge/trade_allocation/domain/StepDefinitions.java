@@ -60,7 +60,7 @@ public class StepDefinitions implements En {
         });
         Then("^an investor (.*) can maintain a (.*) stock up to (.*)", (String investor, String stock, Integer maxQuantity) -> {
             Money price = stockExchange.price(stock);
-            assertThat(accountRepository.findByInvestor(investor).targetQuantity(stock, price), is(maxQuantity));
+            assertThat(accountRepository.findByInvestor(investor).targetMarketQuantity(stock, price), is(maxQuantity));
         });
         Then("^an investor (.*) can own (.*) additional quantity of (.*) stock$", (String investor, Integer additionalQuantity, String stock) -> {
         });
@@ -74,7 +74,7 @@ public class StepDefinitions implements En {
         });
         Then("^an investor (.*) has (.*) quantity of (.*) stock$", (String investor, Integer quantity, String stock) -> {
             Account account = accountRepository.findByInvestor(investor);
-            assertThat(account.quantity(stock), is(quantity));
+            assertThat(account.currentQuantity(stock), is(quantity));
         });
         Then("^a portfolio manager suggests total (.*) quantity of (.*) stock in (.*)'s account$", (Double totalQuantity, String stock, String investor) -> {
             Account account = accountRepository.findByInvestor(investor);
@@ -83,7 +83,7 @@ public class StepDefinitions implements En {
         });
         Then("^a portfolio manager suggests additional (.*) quantity of (.*) stock in (.*)'s account$", (String additionalQuantity, String stock, String investor) -> {
             Account account = accountRepository.findByInvestor(investor);
-            Double additionalPosition = portfolio.suggestedAdditionalPosition(account, stock);
+            Double additionalPosition = portfolio.suggestedTradeAllocation(account, stock);
             assertThat(additionalPosition, is(toMoney(additionalQuantity).getAmount().doubleValue()));
         });
     }
