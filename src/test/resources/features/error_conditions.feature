@@ -12,10 +12,20 @@ Feature: Error conditions
     And an investor Sarah sets 2% target percent of APPLE stock
     And an investor Sarah has 50 quantity of APPLE stock with current price $10 in the account
 
-  Scenario: 4. ERROR Condition: SUGGESTED_FINAL_POSITION < 0
+  Scenario: 4. ERROR Condition: SUGGESTED_FINAL_POSITION (-1) < 0
     When a portfolio manager sell 80 quantity of APPLE stock
     And a portfolio manager suggests total -1.0 quantity of APPLE stock in John's account
     And a portfolio manager reallocates the sold APPLE stock
+    Then an investor John has 0 quantity of APPLE stock
+    And an investor Sarah has 0 quantity of APPLE stock
+    Then an investor John has 50 quantity of GOOGLE stock
+    And an investor Sarah has 10 quantity of GOOGLE stock
+
+  Scenario: 5. ERROR Condition: SUGGESTED_FINAL_POSITION (76) > MAX_SHARES (75)
+    When a portfolio manager buy 305 quantity of APPLE stock
+    And an investor John can maintain a APPLE stock up to 75
+    And a portfolio manager suggests total 76 quantity of APPLE stock in John's account
+    And a portfolio manager reallocates the new APPLE stock
     Then an investor John has 0 quantity of APPLE stock
     And an investor Sarah has 0 quantity of APPLE stock
     Then an investor John has 50 quantity of GOOGLE stock

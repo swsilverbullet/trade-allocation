@@ -53,9 +53,16 @@ public class Portfolio {
         List<Pair<Account, Long>> additionalPositions = orderedAdditionalPositions(newTrade);
 
         Long remainingShare = newTrade.singedQuantity();
+        boolean isErrorOccured = false;
         for (int i = 0; i < additionalPositions.size(); i++) {
             Account account = additionalPositions.get(i).getValue0();
-            if (this.suggestedFinalPosition(account, newTrade) >= 0) {
+            if (isErrorOccured ||
+                    this.suggestedFinalPosition(account, newTrade) < 0 ||
+                    this.suggestedFinalPosition(account, newTrade) > account.targetMarketQuantity(newTrade.stock(), newTrade.price())) {
+                account.setToZeroQuantity(newTrade.stock(), newTrade.price());
+                isErrorOccured = true;
+            }
+            else {
                 if (i < additionalPositions.size() - 1) {
                     Long additionalShare = additionalPositions.get(i).getValue1();
                     account.addHolding(new Holding(newTrade.stock(), newTrade.price(), additionalShare));
@@ -64,9 +71,6 @@ public class Portfolio {
                 else {
                     account.addHolding(new Holding(newTrade.stock(), newTrade.price(), remainingShare));
                 }
-            }
-            else {
-                account.setToZeroQuantity(newTrade.stock(), newTrade.price());
             }
         }
     }
