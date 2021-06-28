@@ -46,6 +46,6 @@ Feature: Error conditions
     And a portfolio manager suggests total 10 quantity of APPLE stock in John's account
     And a portfolio manager reallocates the new APPLE stock
     Then an investor John has 0 quantity of APPLE stock
-#    And an investor Sarah has 0 quantity of APPLE stock
+    And an investor Sarah has 0 quantity of APPLE stock
     Then an investor John has 41 quantity of GOOGLE stock
     And an investor Sarah has 59 quantity of GOOGLE stock

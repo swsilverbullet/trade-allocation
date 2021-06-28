@@ -25,23 +25,23 @@ public class Trade {
         return new Trade(stock, quantity, price, Sell);
     }
 
-    String stock() {
+    public String stock() {
         return stock;
     }
 
-    Long singedQuantity() {
+    public Long singedQuantity() {
         return this.buyOrSell == Buy ? quantity : -quantity;
     }
 
-    Money price() {
+    public Money price() {
         return price;
     }
 
-    Boolean isBuy() {
+    public Boolean isBuy() {
         return buyOrSell == Buy;
     }
 
-    Boolean isSell() {
+    public Boolean isSell() {
         return !isBuy();
     }
 

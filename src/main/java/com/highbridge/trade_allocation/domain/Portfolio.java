@@ -1,6 +1,7 @@
 package com.highbridge.trade_allocation.domain;
 
 import com.highbridge.trade_allocation.domain.generic.Money;
+import com.highbridge.trade_allocation.domain.rules.*;
 import org.javatuples.Pair;
 
 import java.math.BigDecimal;
@@ -9,9 +10,11 @@ import java.util.stream.Collectors;
 
 public class Portfolio {
     private final Map<String, Account> accounts;
+    private final AllocationRule rule;
 
     public Portfolio() {
         this.accounts = new HashMap<>();
+        this.rule = new AllocationRule(this);
     }
 
     void add(Account account) {
@@ -26,7 +29,7 @@ public class Portfolio {
         return accounts.values().stream().mapToLong(a -> a.currentQuantity(stock)).sum();
     }
 
-    Double suggestedFinalPosition(Account account, Trade newTrade) {
+    public Double suggestedFinalPosition(Account account, Trade newTrade) {
         Money accountTargetMarketValue = account.targetMarketValue(newTrade.stock());
         Money portfolioTotalTargetMarketValue = totalTargetMarketValue(newTrade.stock());
         return accountTargetMarketValue.times(allInPosition(newTrade)).divide(portfolioTotalTargetMarketValue).getAmount().doubleValue();
@@ -50,25 +53,19 @@ public class Portfolio {
     }
 
     void reallocateHoldings(Trade newTrade) {
-        List<Pair<Account, Long>> additionalPositions = orderedAdditionalPositions(newTrade);
+        boolean isErrorConditionMet = rule.isConditionMet(newTrade);
+
+        List<Pair<Account, Long>> accountAndSuggestedQuantity = orderedAccountAndSuggestedQuantity(newTrade);
 
         Long remainingShare = newTrade.singedQuantity();
-        boolean isErrorOccured = false;
-        for (int i = 0; i < additionalPositions.size(); i++) {
-            Account account = additionalPositions.get(i).getValue0();
-            Double temp1 = this.suggestedFinalPosition(account, newTrade);
-            Long temp2 = account.currentQuantity(newTrade.stock());
-            if (isErrorOccured
-                    || this.suggestedFinalPosition(account, newTrade) < 0
-                    || this.suggestedFinalPosition(account, newTrade) > account.targetMarketQuantity(newTrade.stock(), newTrade.price())
-                    || (this.suggestedFinalPosition(account, newTrade) < account.currentQuantity(newTrade.stock()) && newTrade.isBuy())
-                    || (this.suggestedFinalPosition(account, newTrade) > account.currentQuantity(newTrade.stock()) && newTrade.isSell())) {
+        for (int i = 0; i < accountAndSuggestedQuantity.size(); i++) {
+            Account account = accountAndSuggestedQuantity.get(i).getValue0();
+            if (isErrorConditionMet) {
                 account.setToZeroQuantity(newTrade.stock(), newTrade.price());
-                isErrorOccured = true;
             }
             else {
-                if (i < additionalPositions.size() - 1) {
-                    Long additionalShare = additionalPositions.get(i).getValue1();
+                if (i < accountAndSuggestedQuantity.size() - 1) {
+                    Long additionalShare = accountAndSuggestedQuantity.get(i).getValue1();
                     account.addHolding(new Holding(newTrade.stock(), newTrade.price(), additionalShare));
                     remainingShare -= additionalShare;
                 }
@@ -79,13 +76,17 @@ public class Portfolio {
         }
     }
 
-    private List<Pair<Account, Long>> orderedAdditionalPositions(Trade trade) {
+    private List<Pair<Account, Long>> orderedAccountAndSuggestedQuantity(Trade trade) {
         List<Account> ordered = new ArrayList<>(accounts.values());
         Collections.sort(ordered, new AllocationAscendingComparator(this, trade));
 
         return ordered.stream()
                 .map(a -> new Pair<>(a, Math.round(this.suggestedTradeAllocation(a, trade))))
                 .collect(Collectors.toList());
+    }
+
+    public List<Account> accounts() {
+        return new ArrayList<>(this.accounts.values());
     }
 }
 

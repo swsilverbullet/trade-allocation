@@ -42,15 +42,15 @@ public class Account {
         this.stockTargetPercent.put(stock, targetPercent);
     }
 
-    Money targetMarketValue(String stock) {
+    public Money targetMarketValue(String stock) {
         return stockTargetPercent.get(stock).of(capital);
     }
 
-    Long targetMarketQuantity(String stock, Money price) {
+    public Long targetMarketQuantity(String stock, Money price) {
         return targetMarketValue(stock).divide(price).getAmount().longValue();
     }
 
-    Long currentQuantity(String stock) {
+    public Long currentQuantity(String stock) {
         return holdings.get(stock).quantity();
     }
 
