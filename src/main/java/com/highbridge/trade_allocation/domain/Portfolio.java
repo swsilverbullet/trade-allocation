@@ -54,8 +54,7 @@ public class Portfolio {
 
     void reallocateHoldings(Trade newTrade) {
         boolean isErrorConditionMet = rule.isConditionMet(newTrade);
-
-        List<Pair<Account, Long>> accountAndSuggestedQuantity = orderedAccountAndSuggestedQuantity(newTrade);
+        List<Pair<Account, Long>> accountAndSuggestedQuantity = new AccountAndSuggestedTradeAllocation(this).ordered(newTrade);
 
         Long remainingShare = newTrade.singedQuantity();
         for (int i = 0; i < accountAndSuggestedQuantity.size(); i++) {
@@ -76,31 +75,8 @@ public class Portfolio {
         }
     }
 
-    private List<Pair<Account, Long>> orderedAccountAndSuggestedQuantity(Trade trade) {
-        List<Account> ordered = new ArrayList<>(accounts.values());
-        Collections.sort(ordered, new AllocationAscendingComparator(this, trade));
-
-        return ordered.stream()
-                .map(a -> new Pair<>(a, Math.round(this.suggestedTradeAllocation(a, trade))))
-                .collect(Collectors.toList());
-    }
 
     public List<Account> accounts() {
         return new ArrayList<>(this.accounts.values());
-    }
-}
-
-class AllocationAscendingComparator implements Comparator<Account> {
-    private final Portfolio portfolio;
-    private final Trade trade;
-
-    public AllocationAscendingComparator(Portfolio portfolio, Trade trade) {
-        this.portfolio = portfolio;
-        this.trade = trade;
-    }
-
-    @Override
-    public int compare(Account a1, Account a2) {
-        return this.portfolio.suggestedTradeAllocation(a1, trade).compareTo(this.portfolio.suggestedTradeAllocation(a2, trade));
     }
 }

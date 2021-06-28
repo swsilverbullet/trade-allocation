@@ -37,10 +37,8 @@ public class StepDefinitions implements En {
             accountRepository.all().forEach(a -> portfolio.add(a));
             if (buyOrSell.equals("buy")) {
                 newTrade = Trade.buy(stock, quantity, stockExchange.price(stock));
-//                assertThat(portfolio.entitledToBuyUpTo(newTrade.stock(), newTrade.price()) >= quantity, is(true));
             } else {
                 newTrade = Trade.sell(stock, quantity, stockExchange.price(stock));
-//                assertThat(portfolio.entitledToSellUpTo(stock) >= quantity, is(true));
             }
         });
         When("^a portfolio manager (allocates|deallocates) (.*) quantity of (.*) stock (?:to|from) (.*)'s account$", (String allocation, Long quantity, String stock, String investor) -> {
