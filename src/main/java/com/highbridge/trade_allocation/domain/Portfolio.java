@@ -56,6 +56,7 @@ public class Portfolio {
 
     public void reallocateHoldings(Trade newTrade) {
         if (this.rule.isErrorConditionMet(newTrade)) {
+            System.out.println(">>>> CONDITION MET");
             accounts().forEach(account -> account.setToZeroQuantity(newTrade.stock(), newTrade.price()));
         }
         else {

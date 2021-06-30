@@ -15,6 +15,7 @@ src/test/resources/features/
 ```
 
 ## 3. Run Main
+All csv files are bundled with jar.
 ```
 $ cd ./target
 $ java -cp ./trade-allocation-1.0-SNAPSHOT-jar-with-dependencies.jar com.highbridge.trade_allocation.TradeAllocator trades.csv capitals.csv holdings.csv targets.csv allocations.csv

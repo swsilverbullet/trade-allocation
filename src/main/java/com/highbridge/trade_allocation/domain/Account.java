@@ -44,7 +44,10 @@ public class Account {
     }
 
     public Money targetMarketValue(String stock) {
-        return stockTargetPercent.get(stock).of(capital);
+        if (stockTargetPercent.get(stock) != null) {
+            return stockTargetPercent.get(stock).of(capital);
+        }
+        return Money.dollars(0);
     }
 
     public Long targetMarketQuantity(String stock, Money price) {
@@ -52,7 +55,10 @@ public class Account {
     }
 
     public Long currentQuantity(String stock) {
-        return holdings.get(stock).quantity();
+        if (holdings.get(stock) != null) {
+            return holdings.get(stock).quantity();
+        }
+        return 0L;
     }
 
     Long quantityCanBeAdded(String stock, Money price) {
