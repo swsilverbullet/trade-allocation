@@ -13,3 +13,9 @@ src/test/resources/features/
 - 3_sell_stock.feature
 - 4_error_conditions.feature
 ```
+
+## 3. Run Main
+```
+$ cd ./target
+$ java -cp ./trade-allocation-1.0-SNAPSHOT-jar-with-dependencies.jar com.highbridge.trade_allocation.TradeAllocator trades.csv capitals.csv holdings.csv targets.csv allocations.csv
+```
