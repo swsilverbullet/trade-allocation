@@ -5,6 +5,7 @@ import com.highbridge.trade_allocation.domain.generic.Percent;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class Account {
     private final String investor;
@@ -20,7 +21,7 @@ public class Account {
         this.stockTargetPercent = new HashMap<>();
     }
 
-    void addHolding(Holding holding) {
+    public void addHolding(Holding holding) {
         if (this.holdings.containsKey(holding.stock())) {
             this.holdings.put(holding.stock(), this.holdings.get(holding.stock()).merge(holding));
         }
@@ -38,7 +39,7 @@ public class Account {
         }
     }
 
-    void addStockTargetPercent(String stock, Percent targetPercent) {
+    public void addStockTargetPercent(String stock, Percent targetPercent) {
         this.stockTargetPercent.put(stock, targetPercent);
     }
 
@@ -58,7 +59,11 @@ public class Account {
         return targetMarketQuantity(stock, price) - currentQuantity(stock);
     }
 
-    String investor() {
+    public Set<String> holdStocks() {
+        return holdings.keySet();
+    }
+
+    public String investor() {
         return this.investor;
     }
 }

@@ -19,7 +19,7 @@ public class Portfolio {
         this.rule = new AllocationRule(this);
     }
 
-    void add(Account account) {
+    public void add(Account account) {
         this.accounts.put(account.investor(), account);
     }
 
@@ -54,7 +54,7 @@ public class Portfolio {
         return accounts.values().stream().mapToLong(a -> a.currentQuantity(stock)).sum();
     }
 
-    void reallocateHoldings(Trade newTrade) {
+    public void reallocateHoldings(Trade newTrade) {
         if (this.rule.isErrorConditionMet(newTrade)) {
             accounts().forEach(account -> account.setToZeroQuantity(newTrade.stock(), newTrade.price()));
         }

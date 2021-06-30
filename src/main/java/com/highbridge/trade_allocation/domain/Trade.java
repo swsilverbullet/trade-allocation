@@ -10,19 +10,19 @@ public class Trade {
     private final Money price;
     private final BuyOrSell buyOrSell;
 
-    private Trade(String stock, Long quantity, Money price, BuyOrSell buyOrSell) {
+    public Trade(String stock, Long quantity, Money price, BuyOrSell buyOrSell) {
         this.stock = stock;
         this.quantity = quantity;
         this.price = price;
         this.buyOrSell = buyOrSell;
     }
 
-    static Trade buy(String stock, Long quantity, Money price) {
-        return new Trade(stock, quantity, price, Buy);
+    public static Trade buy(String stock, Long quantity, Money price) {
+        return new Trade(stock, quantity, price, BUY);
     }
 
-    static Trade sell(String stock, Long quantity, Money price) {
-        return new Trade(stock, quantity, price, Sell);
+    public static Trade sell(String stock, Long quantity, Money price) {
+        return new Trade(stock, quantity, price, SELL);
     }
 
     public String stock() {
@@ -30,7 +30,7 @@ public class Trade {
     }
 
     public Long singedQuantity() {
-        return this.buyOrSell == Buy ? quantity : -quantity;
+        return this.buyOrSell == BUY ? quantity : -quantity;
     }
 
     public Money price() {
@@ -38,14 +38,19 @@ public class Trade {
     }
 
     public Boolean isBuy() {
-        return buyOrSell == Buy;
+        return buyOrSell == BUY;
     }
 
     public Boolean isSell() {
         return !isBuy();
     }
 
-    enum BuyOrSell {
-        Buy, Sell
+    public enum BuyOrSell {
+        BUY, SELL
+    }
+
+    @Override
+    public String toString() {
+        return stock() + " " + price() + "," + buyOrSell + "," + quantity;
     }
 }

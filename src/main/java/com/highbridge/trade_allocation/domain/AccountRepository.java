@@ -13,15 +13,15 @@ public class AccountRepository {
         this.accounts = new HashMap<>();
     }
 
-    Account findByInvestor(String investor) {
+    public Account findByInvestor(String investor) {
         return accounts.get(investor);
     }
 
-    List<Account> all() {
+    public List<Account> all() {
         return new ArrayList<>(accounts.values());
     }
 
-    void addAccount(Account account) {
+    public void addAccount(Account account) {
         this.accounts.put(account.investor(), account);
     }
 }
