@@ -12,6 +12,8 @@ src/test/resources/features/
 - 2_buy_stock.feature
 - 3_sell_stock.feature
 - 4_error_conditions.feature
+- 5_no_target_percent.feature
+- 6_no_stock_position.feature
 ```
 
 ## 3. Run Main
