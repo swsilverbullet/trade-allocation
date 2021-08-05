@@ -31,19 +31,20 @@ public class Portfolio {
         return accounts.values().stream().mapToLong(a -> a.currentQuantity(stock)).sum();
     }
 
-    public Double suggestedFinalPosition(Account account, Trade newTrade) {
-        Money accountTargetMarketValue = account.targetMarketValue(newTrade.stock());
-        Money portfolioTotalTargetMarketValue = totalTargetMarketValue(newTrade.stock());
-        return accountTargetMarketValue.times(allInPosition(newTrade)).divide(portfolioTotalTargetMarketValue).getAmount().doubleValue();
-    }
-
     Long allInPosition(Trade newTrade) {
         return totalQuantity(newTrade.stock()) + newTrade.singedQuantity();
     }
 
     Double suggestedTradeAllocation(Account account, Trade newTrade) {
-        Double suggestedFinalPosition = suggestedFinalPosition(account, newTrade);
-        return BigDecimal.valueOf(suggestedFinalPosition).add(BigDecimal.valueOf(account.currentQuantity(newTrade.stock())).setScale(2).negate()).doubleValue();
+        BigDecimal suggestedFinalQuantity = BigDecimal.valueOf(suggestedFinalPosition(account, newTrade));
+        BigDecimal currentQuantity = BigDecimal.valueOf(account.currentQuantity(newTrade.stock()));
+        return suggestedFinalQuantity.subtract(currentQuantity).doubleValue();
+    }
+
+    public Double suggestedFinalPosition(Account account, Trade newTrade) {
+        Money accountTargetMarketValue = account.targetMarketValue(newTrade.stock());
+        Money portfolioTotalTargetMarketValue = totalTargetMarketValue(newTrade.stock());
+        return accountTargetMarketValue.times(allInPosition(newTrade)).divide(portfolioTotalTargetMarketValue).getAmount().doubleValue();
     }
 
     private Money totalTargetMarketValue(String stock) {
@@ -56,8 +57,7 @@ public class Portfolio {
 
     public void reallocateHoldings(Trade newTrade) {
         if (this.rule.isErrorConditionMet(newTrade)) {
-            System.out.println(">>>> CONDITION MET");
-            accounts().forEach(account -> account.setToZeroQuantity(newTrade.stock(), newTrade.price()));
+            this.accounts.values().forEach(account -> account.setToZeroQuantity(newTrade.stock(), newTrade.price()));
         }
         else {
             List<Pair<Account, Long>> accountAndSuggestedQuantity = new AccountAndSuggestedTradeAllocation(this).ordered(newTrade);

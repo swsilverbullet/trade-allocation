@@ -22,10 +22,8 @@ public class AllocationRule {
 
     public Boolean isErrorConditionMet(Trade trade) {
         for (Account account : portfolio.accounts()) {
-            for (FinalPositionErrorCondition condition : conditions) {
-                if (condition.isSatisfiedBy(portfolio.suggestedFinalPosition(account, trade), account, trade)) {
-                    return true;
-                }
+            if (conditions.stream().anyMatch(c -> c.isSatisfiedBy(portfolio.suggestedFinalPosition(account, trade), account, trade))) {
+                return true;
             }
         }
         return false;
